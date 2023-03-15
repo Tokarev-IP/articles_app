@@ -1,6 +1,7 @@
 package com.example.articlesproject.domain
 
 interface AuthInterface {
-
-    fun getVerificationCode()
+    fun getVerificationCode(
+        phoneNumber: String,
+    )
 }

@@ -1,66 +1,42 @@
 package com.example.articlesproject.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.articlesproject.data.AuthCallback
+import com.example.articlesproject.di.AppScope
+import com.example.articlesproject.domain.GetResponseFromAuthUseCase
+import com.example.articlesproject.domain.GetVerificationCodeUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel: ViewModel() {
+@AppScope
+class AuthViewModel @Inject constructor(
+    private val getVerificationCodeUseCase: GetVerificationCodeUseCase,
+    private val getResponseFromAuthUseCase: GetResponseFromAuthUseCase,
+) : ViewModel() {
 
-    //    private val auth: AuthInterface = AuthRepository(this)
-//    private val authUseCase = GetVerificationCodeUseCase(auth)
+    private val uiFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    val uiStateFlow = uiFlow.asStateFlow()
 
-    private val regServerError: MutableStateFlow<String> = MutableStateFlow("RegErrors.NoError")
-    val stateReg = regServerError.asStateFlow()
+    init {
+        viewModelScope.launch {
+            getResponseFromAuthUseCase.execute()
+                .collect {
+                    when (it) {
+                        is AuthCallback.AuthData.Error -> {}
+                        is AuthCallback.AuthData.Loading -> {}
+                        is AuthCallback.AuthData.Initial -> {}
+                        is AuthCallback.AuthData.CodeWasSent -> {}
+                    }
+                }
+        }
+    }
 
-    private val logInServerError: MutableStateFlow<String> = MutableStateFlow("LogInErrors.NoError")
-    val stateLogIn = logInServerError.asStateFlow()
-
-//    fun setAuthActions(events: Events){
-//        when (events){
-//            is Events.GetVerificationCode -> {
-//
-//            }
-//            is Events.SendVerificationCode -> {
-//
-//            }
-//            else -> {}
-//        }
-//    }
-
-//    fun getVerificationCode(getVerificationCodeUseCase: GetVerificationCodeUseCase, string: String) {
-//        getVerificationCodeUseCase.execute(string, getCallback())
-//    }
-
-//    private fun getCallback(): PhoneAuthProvider.OnVerificationStateChangedCallbacks {
-//        return object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-//                Log.d("TAG", "onVerificationCompleted:$credential")
-//                signInWithPhoneAuthCredential(credential)
-//            }
-//
-//            override fun onVerificationFailed(e: FirebaseException) {
-//                // This callback is invoked in an invalid request for verification is made,
-//                // for instance if the the phone number format is not valid.
-//                Log.w("TAG", "onVerificationFailed", e)
-//
-//                if (e is FirebaseAuthInvalidCredentialsException) {
-//                    // Invalid request
-//                } else if (e is FirebaseTooManyRequestsException) {
-//                    // The SMS quota for the project has been exceeded
-//                } else if (e is FirebaseNetworkException) {
-//
-//                }
-//
-//                // Show a message and update the UI
-//            }
-//
-//            override fun onCodeSent(
-//                verificationId: String,
-//                token: PhoneAuthProvider.ForceResendingToken
-//            ) {
-//
-//            }
-//
-//        }
-//    }
+    fun getVerificationCode(
+        phoneNumber: String,
+    ) {
+        getVerificationCodeUseCase.execute(phoneNumber)
+    }
 }
