@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
-import com.example.articlesproject.login.theme.ArticlesProjectTheme
+import com.example.articlesproject.theme.ArticlesProjectTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

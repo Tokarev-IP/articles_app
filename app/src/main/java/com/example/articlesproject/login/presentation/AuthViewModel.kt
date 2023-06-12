@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.articlesproject.login.data.AuthRepository
+import com.example.articlesproject.login.domain.MyTime
 import com.example.articlesproject.login.domain.usecases.GetCodeUseCase
 import com.example.articlesproject.login.domain.usecases.SignInUseCase
+import com.example.articlesproject.login.presentation.states.UiIntents
 import com.example.articlesproject.login.presentation.states.UiStates
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
@@ -66,12 +68,29 @@ class AuthViewModel @Inject constructor(
                             Log.d("MYTAG", "VM CodeWasSent")
                         }
                         is AuthRepository.AuthData.AutoEnter -> {}
+                        is AuthRepository.AuthData.LoginCompletely -> {
+                            uiState.value = UiStates.Complete
+                        }
                     }
                 }
         }
     }
 
-    fun sendVerificationCode(code: String) {
+    fun setIntent(intent: UiIntents) {
+        when (intent) {
+            is UiIntents.GetCode -> {
+                uiState.value = UiStates.Loading
+                verifyPhone(intent.phoneAuthOptions)
+                setTimer(MyTime.TIME_OUT_TIME)
+            }
+            is UiIntents.SendCode -> {
+                uiState.value = UiStates.Loading
+                sendVerificationCode(intent.code)
+            }
+        }
+    }
+
+    private fun sendVerificationCode(code: String) {
         val credential = signInUseCase.getCredential(
             verificationId,
             code,
@@ -79,7 +98,7 @@ class AuthViewModel @Inject constructor(
         signIn(credential)
     }
 
-    fun verifyPhone(options: PhoneAuthOptions) {
+    private fun verifyPhone(options: PhoneAuthOptions) {
         getCodeUseCase.execute(options)
     }
 
@@ -87,12 +106,7 @@ class AuthViewModel @Inject constructor(
         signInUseCase.signInWithPhoneAuthCredential(credential)
     }
 
-    fun setLoadingState() {
-        Log.d("MYTAG", "setLoadingState")
-        uiState.value = UiStates.Loading
-    }
-
-    fun setTimer(time: Long) {
+    private fun setTimer(time: Long) {
         var minutes: Long
         var seconds: Long
         var timer = time

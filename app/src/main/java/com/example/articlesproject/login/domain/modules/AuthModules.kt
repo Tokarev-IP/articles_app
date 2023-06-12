@@ -1,4 +1,4 @@
-package com.example.articlesproject.login.modules
+package com.example.articlesproject.login.domain.modules
 
 import com.example.articlesproject.login.data.AuthRepository
 import com.example.articlesproject.login.data.GetCodeRepository

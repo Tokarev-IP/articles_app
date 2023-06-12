@@ -24,6 +24,7 @@ class AuthRepository @Inject constructor(
         Log.d("MYTAG", "onVerificationCompleted:$credential")
         signInWithPhoneAuthCredential(credential)
     }
+
     override fun onVerificationFailed(e: FirebaseException) {
         // This callback is invoked in an invalid request for verification is made,
         // for instance if the the phone number format is not valid.
@@ -46,6 +47,7 @@ class AuthRepository @Inject constructor(
             }
         }
     }
+
     override fun onCodeSent(
         verificationId: String,
         token: PhoneAuthProvider.ForceResendingToken
@@ -61,10 +63,7 @@ class AuthRepository @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("MYTAG", "signInWithCredential:success")
-                    dataFlow.tryEmit(AuthData.Info("Successfully"))
-
-                    Log.d("MYTAG", task.result.user.toString())
-                    Log.d("MYTAG", task.result.credential.toString())
+                    dataFlow.tryEmit(AuthData.LoginCompletely)
                 } else {
                     Log.w("MYTAG", "signInWithCredential:failure", task.exception)
 
@@ -106,6 +105,7 @@ class AuthRepository @Inject constructor(
         ) : AuthData
 
         object AutoEnter : AuthData
+        object LoginCompletely : AuthData
         data class Info(val info: String) : AuthData
     }
 }

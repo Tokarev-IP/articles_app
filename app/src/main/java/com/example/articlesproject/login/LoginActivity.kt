@@ -1,5 +1,6 @@
 package com.example.articlesproject.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -8,13 +9,19 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.articlesproject.login.data.AuthRepository
+import com.example.articlesproject.login.domain.MyTime
 import com.example.articlesproject.login.presentation.AuthViewModel
 import com.example.articlesproject.login.presentation.composable.MainActivityCompose
-import com.example.articlesproject.login.theme.ArticlesProjectTheme
+import com.example.articlesproject.login.presentation.states.UiIntents
+import com.example.articlesproject.login.presentation.states.UiStates
+import com.example.articlesproject.main.MainActivity
+import com.example.articlesproject.theme.ArticlesProjectTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +46,11 @@ class LoginActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    StartUI()
+                    if (auth.currentUser != null){
+                        startActivity(Intent(this, MainActivity::class.java))
+                    } else {
+                        StartUI()
+                    }
                 }
             }
         }
@@ -49,19 +60,22 @@ class LoginActivity : ComponentActivity() {
     fun StartUI() {
         val authViewModel = hiltViewModel<AuthViewModel>()
 
-        Log.d("MYTAG", "current user is ${auth.currentUser}")
+        val state by authViewModel.getUiStateFlow().collectAsState()
+
+        when (state){
+            is UiStates.Complete -> {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+        }
 
         Log.d("MYTAG", "StartUI")
 
         MainActivityCompose(
-            onSendCode = {code: String ->
-//                authViewModel.setLoadingState()
-                authViewModel.sendVerificationCode(code)
+            onSendCode = { code: String ->
+                authViewModel.setIntent(UiIntents.SendCode(code))
             },
             onReceiveCode = { phoneNumber: String ->
-                authViewModel.setLoadingState()
-                authViewModel.verifyPhone(createOptions(phoneNumber))
-                authViewModel.setTimer(TIME_OUT_TIME)
+                authViewModel.setIntent(UiIntents.GetCode(createOptions(phoneNumber)))
             },
             authViewModel = authViewModel
         )
@@ -74,14 +88,10 @@ class LoginActivity : ComponentActivity() {
     private fun createOptions(phoneNumber: String): PhoneAuthOptions {
         return PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phoneNumber)                  // Phone number to verify
-            .setTimeout(TIME_OUT_TIME, TimeUnit.SECONDS)    // Timeout and unit
+            .setTimeout(MyTime.TIME_OUT_TIME, TimeUnit.SECONDS)    // Timeout and unit
             .setActivity(this)                        // Activity (for callback binding)
             .setCallbacks(authRepository)                       // OnVerificationStateChangedCallbacks
             .build()
-    }
-
-    private companion object My{
-        const val TIME_OUT_TIME = 90L
     }
 
     @Preview(showBackground = true)

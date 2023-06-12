@@ -7,10 +7,8 @@ interface UiStates {
         val verificationId: String,
         val token: PhoneAuthProvider.ForceResendingToken,
     ) : UiStates
-
     data class Info(val info: String) : UiStates
-
     object Loading: UiStates
-
     object Nothing: UiStates
+    object Complete: UiStates
 }
