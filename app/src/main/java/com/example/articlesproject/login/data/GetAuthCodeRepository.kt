@@ -1,15 +1,15 @@
 package com.example.articlesproject.login.data
 
-import com.example.articlesproject.login.domain.interfaces.GetCodeInterface
+import com.example.articlesproject.login.domain.interfaces.GetAuthCodeInterface
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetCodeRepository @Inject constructor(): GetCodeInterface {
+class GetAuthCodeRepository @Inject constructor(): GetAuthCodeInterface {
 
-    override fun verifyPhoneNumber(options: PhoneAuthOptions){
+    override fun verifyPhoneNumber(options: PhoneAuthOptions) {
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 }

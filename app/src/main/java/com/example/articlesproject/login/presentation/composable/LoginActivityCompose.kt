@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainActivityCompose(
+fun LoginActivityCompose(
     modifier: Modifier = Modifier,
     onSendCode: (String) -> Unit,
     onReceiveCode: (String) -> Unit,

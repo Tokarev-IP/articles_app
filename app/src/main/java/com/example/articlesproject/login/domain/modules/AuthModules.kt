@@ -1,8 +1,12 @@
 package com.example.articlesproject.login.domain.modules
 
-import com.example.articlesproject.login.data.AuthRepository
-import com.example.articlesproject.login.data.GetCodeRepository
-import com.example.articlesproject.login.domain.interfaces.GetCodeInterface
+import com.example.articlesproject.login.data.AuthDataFlow
+import com.example.articlesproject.login.data.FirebaseAuthRepository
+import com.example.articlesproject.login.data.SignInRepository
+import com.example.articlesproject.login.data.GetAuthCodeRepository
+import com.example.articlesproject.login.domain.interfaces.AuthDataFlowInterface
+import com.example.articlesproject.login.domain.interfaces.FirebaseAuthInterface
+import com.example.articlesproject.login.domain.interfaces.GetAuthCodeInterface
 import com.example.articlesproject.login.domain.interfaces.SignInInterface
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
@@ -17,11 +21,19 @@ import javax.inject.Singleton
 interface AuthModule {
     @Singleton
     @Binds
-    fun bindSignInInterface(impl: AuthRepository): SignInInterface
+    fun bindSignInInterface(impl: SignInRepository): SignInInterface
 
     @Singleton
     @Binds
-    fun bindGetCodeInterface(impl: GetCodeRepository): GetCodeInterface
+    fun bindGetCodeInterface(impl: GetAuthCodeRepository): GetAuthCodeInterface
+
+    @Singleton
+    @Binds
+    fun bindAuthDataFlowInterface(impl: AuthDataFlow): AuthDataFlowInterface
+
+    @Singleton
+    @Binds
+    fun bindFirebaseAuthInterface(impl: FirebaseAuthRepository): FirebaseAuthInterface
 }
 
 @Module

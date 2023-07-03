@@ -3,8 +3,11 @@ package com.example.articlesproject.login.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.articlesproject.login.data.AuthRepository
+import com.example.articlesproject.login.data.AuthDataFlow
+import com.example.articlesproject.login.data.SignInRepository
 import com.example.articlesproject.login.domain.MyTime
+import com.example.articlesproject.login.domain.usecases.AuthDataFlowUseCase
+import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
 import com.example.articlesproject.login.domain.usecases.GetCodeUseCase
 import com.example.articlesproject.login.domain.usecases.SignInUseCase
 import com.example.articlesproject.login.presentation.states.UiIntents
@@ -24,6 +27,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val getCodeUseCase: GetCodeUseCase,
+    private val authDataFlowUseCase: AuthDataFlowUseCase,
+    private val firebaseAuthUseCase: FirebaseAuthUseCase,
 ) : ViewModel() {
 
     private val uiState: MutableStateFlow<UiStates> = MutableStateFlow(UiStates.Nothing)
@@ -49,26 +54,28 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             Log.d("MYTAG", "launch in VM")
-            signInUseCase.getResponseFlow()
+            authDataFlowUseCase.getDataFlow()
                 .collect() {
                     Log.d("MYTAG", "collect in VM")
                     when (it) {
-                        is AuthRepository.AuthData.Info -> {
+                        is AuthDataFlow.AuthData.Info -> {
                             uiState.value = UiStates.Info(it.info)
                             Log.d("MYTAG", it.info)
 
                             timeJob?.cancelAndJoin()
                             timerState.value = ""
                         }
-                        is AuthRepository.AuthData.CodeWasSent -> {
+                        is AuthDataFlow.AuthData.CodeWasSent -> {
                             uiState.value =
                                 UiStates.CodeWasSent(it.verificationId, it.token)
                             verificationId = it.verificationId
 
                             Log.d("MYTAG", "VM CodeWasSent")
                         }
-                        is AuthRepository.AuthData.AutoEnter -> {}
-                        is AuthRepository.AuthData.LoginCompletely -> {
+                        is AuthDataFlow.AuthData.AutoSignIn -> {
+                            signIn(it.credential)
+                        }
+                        is AuthDataFlow.AuthData.LoginCompletely -> {
                             uiState.value = UiStates.Complete
                         }
                     }
@@ -103,7 +110,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun signIn(credential: PhoneAuthCredential) {
-        signInUseCase.signInWithPhoneAuthCredential(credential)
+        firebaseAuthUseCase.signWithCredential(credential = credential)
     }
 
     private fun setTimer(time: Long) {

@@ -14,10 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.articlesproject.login.data.AuthRepository
+import com.example.articlesproject.login.data.SignInRepository
 import com.example.articlesproject.login.domain.MyTime
 import com.example.articlesproject.login.presentation.AuthViewModel
-import com.example.articlesproject.login.presentation.composable.MainActivityCompose
+import com.example.articlesproject.login.presentation.composable.LoginActivityCompose
 import com.example.articlesproject.login.presentation.states.UiIntents
 import com.example.articlesproject.login.presentation.states.UiStates
 import com.example.articlesproject.main.MainActivity
@@ -35,7 +35,7 @@ class LoginActivity : ComponentActivity() {
     lateinit var auth: FirebaseAuth
 
     @Inject
-    lateinit var authRepository: AuthRepository
+    lateinit var signInRepository: SignInRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class LoginActivity : ComponentActivity() {
 
         Log.d("MYTAG", "StartUI")
 
-        MainActivityCompose(
+        LoginActivityCompose(
             onSendCode = { code: String ->
                 authViewModel.setIntent(UiIntents.SendCode(code))
             },
@@ -90,7 +90,7 @@ class LoginActivity : ComponentActivity() {
             .setPhoneNumber(phoneNumber)                  // Phone number to verify
             .setTimeout(MyTime.TIME_OUT_TIME, TimeUnit.SECONDS)    // Timeout and unit
             .setActivity(this)                        // Activity (for callback binding)
-            .setCallbacks(authRepository)                       // OnVerificationStateChangedCallbacks
+            .setCallbacks(signInRepository)                       // OnVerificationStateChangedCallbacks
             .build()
     }
 

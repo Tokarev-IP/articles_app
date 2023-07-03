@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,24 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import coil.decode.ImageSource
-import com.example.articlesproject.login.presentation.AuthViewModel
-import com.example.articlesproject.main.data.ActivityResultUri
+import com.example.articlesproject.main.presentation.MainActivityCompose
 import com.example.articlesproject.theme.ArticlesProjectTheme
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.IOException
-import java.security.cert.Extension
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -83,23 +71,25 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun StartUi(){
         val mainViewModel = hiltViewModel<MainViewModel>()
+        
+        MainActivityCompose(mainViewModel = mainViewModel)
 
-        TextCompose(
-            onChooseFile = {
-                pickUp()
-            },
-            mainViewModel = mainViewModel,
-            onSendPhoto = {
-                    storage.getReference("photos/image/").child("/path/").putFile(mainViewModel.uri)
-                        .addOnSuccessListener {
-                            Log.d("MYTAG_LOAD", "loadSuccess")
-                        }
-                        .addOnCompleteListener {
-                            Log.d("MYTAG_LOAD", "loadSuccess")
-                        }
-                        .addOnFailureListener {
-                            Log.d("MYTAG_LOAD", "loadFailed + $it")
-                        }
+//        TextCompose(
+//            onChooseFile = {
+//                pickUp()
+//            },
+//            mainViewModel = mainViewModel,
+//            onSendPhoto = {
+//                    storage.getReference("photos/image/").child("/path/").putFile(mainViewModel.uri)
+//                        .addOnSuccessListener {
+//                            Log.d("MYTAG_LOAD", "loadSuccess")
+//                        }
+//                        .addOnCompleteListener {
+//                            Log.d("MYTAG_LOAD", "loadSuccess")
+//                        }
+//                        .addOnFailureListener {
+//                            Log.d("MYTAG_LOAD", "loadFailed + $it")
+//                        }
 
 //                    storageRef.putFile(mainViewModel.uri)
 //                        .addOnSuccessListener {
@@ -108,8 +98,8 @@ class MainActivity : ComponentActivity() {
 //                        .addOnFailureListener {
 //                            Log.d("MYTAG_LOAD", "loadFailed + $it")
 //                        }
-            }
-        )
+//            }
+//        )
     }
 
     fun setUrl(){

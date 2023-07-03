@@ -1,31 +1,17 @@
-package com.example.articlesproject.main
+package com.example.articlesproject.main.presentation.screens
 
-import android.graphics.BitmapFactory
-import android.net.Uri
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import java.io.File
-import java.io.FileInputStream
+import com.example.articlesproject.main.MainViewModel
 
 @Composable
 fun TextCompose(
@@ -44,7 +30,12 @@ fun TextCompose(
             onChooseFile = { onChooseFile() }
         )
 
-        AsyncImage(model = list.value, contentDescription = null)
+        AsyncImage(
+            model = list.value,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            alpha = 2.0f
+        )
 
         Button(
             modifier = modifier.height(40.dp),
