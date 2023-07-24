@@ -2,7 +2,7 @@ package com.example.articlesproject.login.data
 
 import android.util.Log
 import com.example.articlesproject.login.domain.interfaces.FirebaseAuthInterface
-import com.example.articlesproject.login.domain.usecases.AuthDataFlowUseCase
+import com.example.articlesproject.login.domain.usecases.AuthResponseFlowUseCase
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseAuthRepository @Inject constructor(
     private val auth: FirebaseAuth,
-    private val authDataFlowUseCase: AuthDataFlowUseCase,
+    private val authResponseFlowUseCase: AuthResponseFlowUseCase,
 ) : FirebaseAuthInterface {
 
     override fun getAuthId(): String? = auth.uid
@@ -26,25 +26,25 @@ class FirebaseAuthRepository @Inject constructor(
 
     override fun signWithCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
                     Log.d("MYTAG", "signInWithCredential:success")
-                    authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.LoginCompletely)
+                    authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.LoginCompletely)
                 } else {
-                    Log.w("MYTAG", "signInWithCredential:failure", task.exception)
+                    Log.w("MYTAG", "signInWithCredential:failure", it.exception)
 
-                    when (task.exception) {
+                    when (it.exception) {
                         is FirebaseAuthInvalidCredentialsException -> {
-                            authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Incorrect code"))
+                            authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Incorrect code"))
                         }
                         is FirebaseNetworkException -> {
-                            authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Network error"))
+                            authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Network error"))
                         }
                         is FirebaseTooManyRequestsException -> {
-                            authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Too many requests.Try again later"))
+                            authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Too many requests.Try again later"))
                         }
                         else -> {
-                            authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Error"))
+                            authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Error"))
                         }
                     }
                 }

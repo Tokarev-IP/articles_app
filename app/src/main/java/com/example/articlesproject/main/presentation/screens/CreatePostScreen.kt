@@ -50,7 +50,7 @@ fun PostScreen(
 @Composable
 fun PostImage() {
 
-AsyncImage(model = , contentDescription = )
+//AsyncImage(model = , contentDescription = )
 
 }
 

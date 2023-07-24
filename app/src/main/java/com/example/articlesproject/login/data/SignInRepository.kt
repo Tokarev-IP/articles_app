@@ -2,7 +2,7 @@ package com.example.articlesproject.login.data
 
 import android.util.Log
 import com.example.articlesproject.login.domain.interfaces.SignInInterface
-import com.example.articlesproject.login.domain.usecases.AuthDataFlowUseCase
+import com.example.articlesproject.login.domain.usecases.AuthResponseFlowUseCase
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -14,12 +14,12 @@ import javax.inject.Singleton
 
 @Singleton
 class SignInRepository @Inject constructor(
-    private val authDataFlowUseCase: AuthDataFlowUseCase,
+    private val authResponseFlowUseCase: AuthResponseFlowUseCase,
 ) : PhoneAuthProvider.OnVerificationStateChangedCallbacks(), SignInInterface {
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
         Log.d("MYTAG", "onVerificationCompleted:$credential")
-        authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.AutoSignIn(credential))
+        authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.AutoSignIn(credential))
     }
 
     override fun onVerificationFailed(e: FirebaseException) {
@@ -31,17 +31,17 @@ class SignInRepository @Inject constructor(
             is FirebaseAuthInvalidCredentialsException -> {
                 Log.d("MYTAG", "error")
                 val a =
-                    authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Incorrect mobile number"))
+                    authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Incorrect mobile number"))
                 Log.d("MYTAG", a.toString())
             }
             is FirebaseTooManyRequestsException -> {
-                authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Too many requests.Try again later"))
+                authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Too many requests.Try again later"))
             }
             is FirebaseNetworkException -> {
-                authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Network error"))
+                authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Network error"))
             }
             else -> {
-                authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.Info("Error"))
+                authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Error"))
             }
         }
     }
@@ -51,7 +51,7 @@ class SignInRepository @Inject constructor(
         token: PhoneAuthProvider.ForceResendingToken
     ) {
         Log.d("MYTAG", "onCodeSent")
-        authDataFlowUseCase.setItemInFlow(AuthDataFlow.AuthData.CodeWasSent(verificationId, token))
+        authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.CodeWasSent(verificationId, token))
     }
 
     override fun getCredential(

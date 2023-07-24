@@ -3,10 +3,9 @@ package com.example.articlesproject.login.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.articlesproject.login.data.AuthDataFlow
-import com.example.articlesproject.login.data.SignInRepository
+import com.example.articlesproject.login.data.AuthResponseFlow
 import com.example.articlesproject.login.domain.MyTime
-import com.example.articlesproject.login.domain.usecases.AuthDataFlowUseCase
+import com.example.articlesproject.login.domain.usecases.AuthResponseFlowUseCase
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
 import com.example.articlesproject.login.domain.usecases.GetCodeUseCase
 import com.example.articlesproject.login.domain.usecases.SignInUseCase
@@ -27,7 +26,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val getCodeUseCase: GetCodeUseCase,
-    private val authDataFlowUseCase: AuthDataFlowUseCase,
+    private val authResponseFlowUseCase: AuthResponseFlowUseCase,
     private val firebaseAuthUseCase: FirebaseAuthUseCase,
 ) : ViewModel() {
 
@@ -54,28 +53,28 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             Log.d("MYTAG", "launch in VM")
-            authDataFlowUseCase.getDataFlow()
+            authResponseFlowUseCase.getDataFlow()
                 .collect() {
                     Log.d("MYTAG", "collect in VM")
                     when (it) {
-                        is AuthDataFlow.AuthData.Info -> {
+                        is AuthResponseFlow.AuthData.Info -> {
                             uiState.value = UiStates.Info(it.info)
                             Log.d("MYTAG", it.info)
 
                             timeJob?.cancelAndJoin()
                             timerState.value = ""
                         }
-                        is AuthDataFlow.AuthData.CodeWasSent -> {
+                        is AuthResponseFlow.AuthData.CodeWasSent -> {
                             uiState.value =
                                 UiStates.CodeWasSent(it.verificationId, it.token)
                             verificationId = it.verificationId
 
                             Log.d("MYTAG", "VM CodeWasSent")
                         }
-                        is AuthDataFlow.AuthData.AutoSignIn -> {
+                        is AuthResponseFlow.AuthData.AutoSignIn -> {
                             signIn(it.credential)
                         }
-                        is AuthDataFlow.AuthData.LoginCompletely -> {
+                        is AuthResponseFlow.AuthData.LoginCompletely -> {
                             uiState.value = UiStates.Complete
                         }
                     }

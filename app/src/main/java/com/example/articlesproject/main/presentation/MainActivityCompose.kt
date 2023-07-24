@@ -22,6 +22,7 @@ import com.example.articlesproject.login.presentation.composable.screens.LogInSc
 import com.example.articlesproject.login.presentation.composable.screens.VerificationCodeScreenCompose
 import com.example.articlesproject.login.presentation.states.UiStates
 import com.example.articlesproject.main.MainViewModel
+import com.example.articlesproject.main.presentation.screens.PicturesCompose
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +31,9 @@ fun MainActivityCompose(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "LogIn",
+    startDestination: String = "Pic",
+    onSend:() -> Unit,
+    onAddPicture:() -> Unit,
 ) {
     var selectedItem by remember { mutableStateOf(0) }
     val items = listOf("Songs", "Artists", "Playlists")
@@ -109,54 +112,55 @@ fun MainActivityCompose(
 //        },
         content = { innerPadding ->
 
-            Column(
-                modifier = modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom,
-            ) {
-                NavigationBar(
-                    modifier = modifier
-                        .padding(innerPadding)
-                ) {
-                    items.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
+//            Column(
+//                modifier = modifier.fillMaxSize(),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Bottom,
+//            ) {
+//                NavigationBar(
+//                    modifier = modifier
+//                        .padding(innerPadding)
+//                ) {
+//                    items.forEachIndexed { index, item ->
+//                        NavigationBarItem(
+//                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
 //                            label = { Text(item) },
-                            selected = selectedItem == index,
-                            onClick = { selectedItem = index }
-                        )
-                    }
-                }
-            }
+//                            selected = selectedItem == index,
+//                            onClick = { selectedItem = index }
+//                        )
+//                    }
+//                }
+//            }
 
-            Column(
-                modifier = modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
+//            Column(
+//                modifier = modifier.fillMaxSize(),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center,
+//            ) {
 //                if (showProgressIndicator)
 //                    CircularProgressIndicator()
-            }
+//            }
 
             NavHost(
-                modifier = modifier.padding(innerPadding),
+                modifier = modifier.padding(innerPadding).fillMaxSize(),
                 navController = navController,
                 startDestination = startDestination
             ) {
-//                composable("LogIn") {
-//                    LogInScreenCompose(
-//                        width = 320.dp,
-//                        onReceiveCode = { phoneNumber: String ->
-//                            onReceiveCode(phoneNumber)
-//                        },
-//                        isActive = !showProgressIndicator,
-//                        onGoToCodeScreen = {
-//                            navController.navigate("EnterCode")
-//                        },
-//                        haveGotCode = haveGotCode,
-//                        timer = timer,
-//                    )
-//                }
+                composable("Pic") {
+                    Log.d("MYTAG", "picture")
+                    PicturesCompose(
+                        mainViewModel = mainViewModel,
+                        onAddPicture = { onAddPicture() },
+                        onSend = { onSend() },
+                    )
+                }
+                composable("Qwe") {
+                    PicturesCompose(
+                        mainViewModel = mainViewModel,
+                        onAddPicture = { onAddPicture() },
+                        onSend = { onSend() },
+                    )
+                }
 //                composable("EnterCode") {
 //                    VerificationCodeScreenCompose(
 //                        onSendCode = { code: String ->

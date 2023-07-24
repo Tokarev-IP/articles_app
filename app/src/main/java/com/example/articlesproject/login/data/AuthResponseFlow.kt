@@ -1,6 +1,6 @@
 package com.example.articlesproject.login.data
 
-import com.example.articlesproject.login.domain.interfaces.AuthDataFlowInterface
+import com.example.articlesproject.login.domain.interfaces.AuthResponseFlowInterface
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AuthDataFlow @Inject constructor(): AuthDataFlowInterface {
+class AuthResponseFlow @Inject constructor(): AuthResponseFlowInterface {
 
     private val dataFlow: MutableSharedFlow<AuthData> = MutableSharedFlow(extraBufferCapacity = 1)
 
