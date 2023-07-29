@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'com.example.articlesproject'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.articlesproject"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -56,18 +56,19 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
-    implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    implementation 'androidx.activity:activity-compose:1.7.2'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.1'
-    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
-    implementation 'com.google.firebase:firebase-storage-ktx:20.2.0'
+    implementation 'androidx.compose.material3:material3:1.1.1'
+    implementation 'com.google.firebase:firebase-auth-ktx:22.1.0'
+    implementation 'com.google.firebase:firebase-storage-ktx:20.2.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.7.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation ("androidx.compose.runtime:runtime-livedata:$compose_version")
@@ -79,7 +80,7 @@ dependencies {
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.3')
     // Also add the dependency for the Google Play services library and specify its version
-    implementation 'com.google.android.gms:play-services-auth:20.4.1'
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
 

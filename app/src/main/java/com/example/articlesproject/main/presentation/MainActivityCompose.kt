@@ -5,11 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,13 +18,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.articlesproject.login.presentation.AuthViewModel
-import com.example.articlesproject.login.presentation.composable.screens.LogInScreenCompose
-import com.example.articlesproject.login.presentation.composable.screens.VerificationCodeScreenCompose
-import com.example.articlesproject.login.presentation.states.UiStates
 import com.example.articlesproject.main.MainViewModel
 import com.example.articlesproject.main.presentation.screens.PicturesCompose
-import kotlinx.coroutines.launch
+import com.example.articlesproject.main.presentation.screens.create.CreateItemCompose
+import com.example.articlesproject.main.presentation.screens.create.CreateScreenCompose
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,8 +30,8 @@ fun MainActivityCompose(
     mainViewModel: MainViewModel,
     navController: NavHostController = rememberNavController(),
     startDestination: String = "Pic",
-    onSend:() -> Unit,
-    onAddPicture:() -> Unit,
+    onSend: () -> Unit,
+    onAddPicture: () -> Unit,
 ) {
     var selectedItem by remember { mutableStateOf(0) }
     val items = listOf("Songs", "Artists", "Playlists")
@@ -45,27 +43,25 @@ fun MainActivityCompose(
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data: SnackbarData ->
 
-//                val buttonColor = if (true) {
-//                    ButtonDefaults.textButtonColors(
-//                        containerColor = MaterialTheme.colorScheme.errorContainer,
-//                        contentColor = MaterialTheme.colorScheme.error
-//                    )
-//                } else {
-//                    ButtonDefaults.textButtonColors(
-//                        contentColor = MaterialTheme.colorScheme.inversePrimary
-//                    )
-//                }
+                val buttonColor = if (true) {
+                    ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.inversePrimary
+                    )
+                }
 
                 Snackbar(
                     modifier = Modifier
-//                        .border(2.dp, MaterialTheme.colorScheme.secondary)
                         .padding(24.dp),
-//                    action = {
-//                        TextButton(
-//                            border = BorderStroke(1.dp, Color.Blue),
-//                            onClick = { data.dismiss() },
-//                        ) { Text(data.visuals.actionLabel ?: "") }
-//                    }
+                    action = {
+                        TextButton(
+                            onClick = { data.dismiss() },
+                        ) { Text(data.visuals.actionLabel ?: "") }
+                    }
                 ) {
                     Text(data.visuals.message)
                 }
@@ -87,50 +83,45 @@ fun MainActivityCompose(
 //                }
 //            ) { Text("Show snackbar") }
 //        },
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                        if (actionState.value == MainActivityStates.ONE)
-//                            Text("Registration", maxLines = 1)
-//                        else if (actionState.value == MainActivityStates.TWO)
-//                            Text("Log In", maxLines = 1)
-//                        else {
-//                            Text("Welcome", maxLines = 1)
-//                        }
-//                },
-//                navigationIcon = {
-//                            IconButton(onClick = {
-//
-//                            }) {
-//                                Icon(
-//                                    imageVector = Icons.Filled.ArrowBack,
-//                                    contentDescription = "Go back"
-//                                )
-//                            }
-//                },
-//            )
-//        },
+        topBar = {
+            TopAppBar(
+                title = {
+                            Text("Welcome", maxLines = 1)
+
+                },
+                navigationIcon = {
+                            IconButton(onClick = {
+
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowLeft,
+                                    contentDescription = "Go back"
+                                )
+                            }
+                },
+            )
+        },
         content = { innerPadding ->
 
-//            Column(
-//                modifier = modifier.fillMaxSize(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Bottom,
-//            ) {
-//                NavigationBar(
-//                    modifier = modifier
-//                        .padding(innerPadding)
-//                ) {
-//                    items.forEachIndexed { index, item ->
-//                        NavigationBarItem(
-//                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
-//                            label = { Text(item) },
-//                            selected = selectedItem == index,
-//                            onClick = { selectedItem = index }
-//                        )
-//                    }
-//                }
-//            }
+            Column(
+                modifier = modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
+            ) {
+                NavigationBar(
+                    modifier = modifier
+                        .padding(innerPadding)
+                ) {
+                    items.forEachIndexed { index, item ->
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
+                            label = { Text(item) },
+                            selected = selectedItem == index,
+                            onClick = { selectedItem = index }
+                        )
+                    }
+                }
+            }
 
 //            Column(
 //                modifier = modifier.fillMaxSize(),
@@ -142,17 +133,16 @@ fun MainActivityCompose(
 //            }
 
             NavHost(
-                modifier = modifier.padding(innerPadding).fillMaxSize(),
+                modifier = modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 navController = navController,
                 startDestination = startDestination
             ) {
                 composable("Pic") {
                     Log.d("MYTAG", "picture")
-                    PicturesCompose(
-                        mainViewModel = mainViewModel,
-                        onAddPicture = { onAddPicture() },
-                        onSend = { onSend() },
-                    )
+                    CreateScreenCompose(){}
+
                 }
                 composable("Qwe") {
                     PicturesCompose(
