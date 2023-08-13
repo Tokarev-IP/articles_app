@@ -1,10 +1,8 @@
 package com.example.articlesproject.login.domain.modules
 
-import com.example.articlesproject.login.data.AuthResponseFlow
 import com.example.articlesproject.login.data.FirebaseAuthRepository
 import com.example.articlesproject.login.data.SignInRepository
 import com.example.articlesproject.login.data.GetAuthCodeRepository
-import com.example.articlesproject.login.domain.interfaces.AuthResponseFlowInterface
 import com.example.articlesproject.login.domain.interfaces.FirebaseAuthInterface
 import com.example.articlesproject.login.domain.interfaces.GetAuthCodeInterface
 import com.example.articlesproject.login.domain.interfaces.SignInInterface
@@ -29,11 +27,8 @@ interface AuthModule {
 
     @Singleton
     @Binds
-    fun bindAuthDataFlowInterface(impl: AuthResponseFlow): AuthResponseFlowInterface
-
-    @Singleton
-    @Binds
     fun bindFirebaseAuthInterface(impl: FirebaseAuthRepository): FirebaseAuthInterface
+
 }
 
 @Module
