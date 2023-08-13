@@ -1,6 +1,5 @@
 package com.example.articlesproject.main.data
 
-import com.example.articlesproject.login.data.AuthResponseFlow
 import com.example.articlesproject.main.domain.interfaces.StorageFirebaseFlowInterface
 import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject

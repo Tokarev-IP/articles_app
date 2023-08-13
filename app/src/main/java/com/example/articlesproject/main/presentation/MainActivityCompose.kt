@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -20,8 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.articlesproject.main.MainViewModel
 import com.example.articlesproject.main.presentation.screens.PicturesCompose
-import com.example.articlesproject.main.presentation.screens.create.CreateItemCompose
-import com.example.articlesproject.main.presentation.screens.create.CreateScreenCompose
+import com.example.articlesproject.main.presentation.screens.create.CreateMenuScreenCompose
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,9 +27,8 @@ fun MainActivityCompose(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "Pic",
+    startDestination: String = "CreateMenu",
     onSend: () -> Unit,
-    onAddPicture: () -> Unit,
 ) {
     var selectedItem by remember { mutableStateOf(0) }
     val items = listOf("Songs", "Artists", "Playlists")
@@ -139,18 +136,15 @@ fun MainActivityCompose(
                 navController = navController,
                 startDestination = startDestination
             ) {
-                composable("Pic") {
+                composable("CreateMenu") {
                     Log.d("MYTAG", "picture")
-                    CreateScreenCompose(){}
+//                    CreateMenuScreenCompose(
+//                        dishList = ,
+//                        typeList = ,
+//                        corner = 24.dp,
+//                    )
+                }
 
-                }
-                composable("Qwe") {
-                    PicturesCompose(
-                        mainViewModel = mainViewModel,
-                        onAddPicture = { onAddPicture() },
-                        onSend = { onSend() },
-                    )
-                }
 //                composable("EnterCode") {
 //                    VerificationCodeScreenCompose(
 //                        onSendCode = { code: String ->

@@ -77,7 +77,6 @@ class MainActivity : ComponentActivity() {
 
         MainActivityCompose(
             mainViewModel = mainViewModel,
-            onAddPicture = {pickUp()},
             onSend = {sendPicture()},
         )
 

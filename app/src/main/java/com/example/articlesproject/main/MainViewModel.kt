@@ -22,6 +22,9 @@ class MainViewModel @Inject constructor(): ViewModel() {
     private val uriState: MutableStateFlow<Uri?> = MutableStateFlow(null)
     private val uriStateFlow = uriState.asStateFlow()
 
+    private val data: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    private val dataFlow = data.asStateFlow()
+
 //    private var imageUri: LiveData<Uri> = MutableLiveData()
 
 //    private val uiFlow: MutableStateFlow<UiStates> = MutableStateFlow(UiStates.InitialState)
