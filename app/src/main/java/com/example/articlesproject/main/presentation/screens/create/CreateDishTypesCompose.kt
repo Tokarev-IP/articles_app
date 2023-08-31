@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -25,39 +26,43 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.articlesproject.main.data.data.DishData
+import com.example.articlesproject.main.data.data.MenuData
 
 @Composable
 fun CreateDishTypesCompose(
     modifier: Modifier = Modifier,
-    types: List<String>,
+    menuDataList: List<MenuData>,
     corner: Dp,
-    onAdd: (String) -> Unit,
+    onAddType: (String) -> Unit,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
     ) {
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            items(types.size) {
-                Text(text = types[it], modifier = modifier.width(200.dp))
-                Spacer(modifier = modifier.height(20.dp))
-            }
-        }
-        Spacer(modifier = modifier.height(20.dp))
         CreateDishType(
             corner = corner,
-            onAdd = { onAdd(it) },
+            onAddType = {
+                onAddType(it)
+            },
         )
+        Spacer(modifier = modifier.height(16.dp))
+        for (i in menuDataList) {
+            Text(
+                text = i.type,
+                modifier = modifier.width(200.dp)
+            )
+            Spacer(modifier = modifier.height(8.dp))
+        }
     }
-
 }
 
 @Composable
 fun CreateDishType(
     modifier: Modifier = Modifier,
     corner: Dp,
-    onAdd: (String) -> Unit,
+    onAddType: (String) -> Unit,
 ) {
     val type = rememberSaveable { mutableStateOf("") }
 
@@ -74,7 +79,12 @@ fun CreateDishType(
             text = "Write dish type"
         )
 
-        Button(onClick = { onAdd(type.value) }) {
+        Button(
+            onClick = {
+                onAddType(type.value)
+                type.value = ""
+            }
+        ) {
             Icon(Icons.Filled.Add, contentDescription = "AddIcon")
             Text(text = "Add type")
         }
@@ -105,9 +115,37 @@ fun CreateTypeTextField(
 @Preview(showBackground = true)
 @Composable
 fun DishTypesPreview() {
-     CreateDishTypesCompose(
-         types = listOf("Hot", "Cold", "Main"),
-         corner = 24.dp,
-         onAdd = {}
-     )
+    CreateDishTypesCompose(
+        menuDataList = listOf(
+            MenuData(
+                "Salad", mutableListOf(
+                    DishData(null, "Olevie", 150, "Very tasty salad"),
+                    DishData(null, "Shuba", 170, "Very tasty salad"),
+                    DishData(null, "Vinegret", 130, "Very tasty salad"),
+                    DishData(null, "Craboviy", 140, "Very tasty salad"),
+                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
+                )
+            ),
+            MenuData(
+                "Salad", mutableListOf(
+                    DishData(null, "Olevie", 150, "Very tasty salad"),
+                    DishData(null, "Shuba", 170, "Very tasty salad"),
+                    DishData(null, "Vinegret", 130, "Very tasty salad"),
+                    DishData(null, "Craboviy", 140, "Very tasty salad"),
+                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
+                )
+            ),
+            MenuData(
+                "Salad", mutableListOf(
+                    DishData(null, "Olevie", 150, "Very tasty salad"),
+                    DishData(null, "Shuba", 170, "Very tasty salad"),
+                    DishData(null, "Vinegret", 130, "Very tasty salad"),
+                    DishData(null, "Craboviy", 140, "Very tasty salad"),
+                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
+                )
+            )
+        ),
+        corner = 24.dp,
+        onAddType = {}
+    )
 }

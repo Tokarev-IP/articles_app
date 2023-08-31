@@ -18,8 +18,8 @@ import com.example.articlesproject.login.data.SignInRepository
 import com.example.articlesproject.login.domain.MyTime
 import com.example.articlesproject.login.presentation.AuthViewModel
 import com.example.articlesproject.login.presentation.composable.LoginActivityCompose
-import com.example.articlesproject.login.presentation.states.UiIntents
-import com.example.articlesproject.login.presentation.states.UiStates
+import com.example.articlesproject.login.presentation.states.UiIntentsLogin
+import com.example.articlesproject.login.presentation.states.UiStatesLogin
 import com.example.articlesproject.main.MainActivity
 import com.example.articlesproject.theme.ArticlesProjectTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -63,7 +63,7 @@ class LoginActivity : ComponentActivity() {
         val state by authViewModel.getUiStateFlow().collectAsState()
 
         when (state){
-            is UiStates.Complete -> {
+            is UiStatesLogin.Complete -> {
                 startActivity(Intent(this, MainActivity::class.java))
             }
         }
@@ -72,10 +72,10 @@ class LoginActivity : ComponentActivity() {
 
         LoginActivityCompose(
             onSendCode = { code: String ->
-                authViewModel.setIntent(UiIntents.SendCode(code))
+                authViewModel.setIntent(UiIntentsLogin.SendCode(code))
             },
             onReceiveCode = { phoneNumber: String ->
-                authViewModel.setIntent(UiIntents.GetCode(createOptions(phoneNumber)))
+                authViewModel.setIntent(UiIntentsLogin.GetCode(createOptions(phoneNumber)))
             },
             authViewModel = authViewModel
         )

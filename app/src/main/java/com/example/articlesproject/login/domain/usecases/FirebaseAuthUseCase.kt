@@ -2,6 +2,7 @@ package com.example.articlesproject.login.domain.usecases
 
 import android.util.Log
 import com.example.articlesproject.login.domain.interfaces.FirebaseAuthInterface
+import com.example.articlesproject.login.domain.usecases.states.FirebaseAuthResponseState
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -22,28 +23,28 @@ class FirebaseAuthUseCase @Inject constructor(
 
     fun signWithCredential(
         credential: PhoneAuthCredential,
-        response: (FirebaseResponseState) -> Unit,
+        response: (FirebaseAuthResponseState) -> Unit,
     ) =
         firebaseAuthInterface.signWithCredential(
             credential = credential,
             response = {
                 if (it.isSuccessful) {
                     Log.d("MYTAG", "signInWithCredential:success")
-                    response(FirebaseResponseState.LoginCompletely)
+                    response(FirebaseAuthResponseState.LoginCompletely)
                 } else {
                     Log.w("MYTAG", "signInWithCredential:failure", it.exception)
                     when (it.exception) {
                         is FirebaseAuthInvalidCredentialsException -> {
-                            response(FirebaseResponseState.LoginError("Incorrect code"))
+                            response(FirebaseAuthResponseState.LoginError("Incorrect code"))
                         }
                         is FirebaseNetworkException -> {
-                            response(FirebaseResponseState.LoginError("Network error"))
+                            response(FirebaseAuthResponseState.LoginError("Network error"))
                         }
                         is FirebaseTooManyRequestsException -> {
-                            response(FirebaseResponseState.LoginError("Too many requests.Try again later"))
+                            response(FirebaseAuthResponseState.LoginError("Too many requests.Try again later"))
                         }
                         else -> {
-                            response(FirebaseResponseState.LoginError("Error"))
+                            response(FirebaseAuthResponseState.LoginError("Error"))
                         }
                     }
                 }

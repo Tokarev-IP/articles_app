@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,22 +44,23 @@ fun DishItemCompose(
     ) {
         Column(
             modifier = modifier
-                .width(220.dp)
-                .fillMaxWidth(),
+                .weight(4f),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top,
         ) {
-            Spacer(modifier = modifier.height(16.dp))
+            Spacer(modifier = modifier.height(8.dp))
             DishText(text = dishName)
-            Spacer(modifier = modifier.height(16.dp))
+            Spacer(modifier = modifier.height(8.dp))
             DishText(text = dishPrice.toString())
-            Spacer(modifier = modifier.height(16.dp))
+            Spacer(modifier = modifier.height(8.dp))
             DishText(text = dishDescription)
-            Spacer(modifier = modifier.height(16.dp))
+            Spacer(modifier = modifier.height(8.dp))
         }
         DishPicture(
+            modifier = modifier
+                .weight(1f),
             uri = uri,
-            corner = corner
+            corner = corner,
         )
     }
 }
@@ -81,15 +83,15 @@ fun DishPicture(
 ) {
     AsyncImage(
         modifier = modifier
-            .width(100.dp)
-            .height(100.dp)
+            .height(120.dp)
+            .width(120.dp)
             .background(
                 shape = CircleShape,
                 color = Color.Yellow,
             ),
         model = uri,
         contentDescription = "Picture of a dish",
-        contentScale = ContentScale.Fit,
+//        contentScale = ContentScale.Crop,
     )
 }
 

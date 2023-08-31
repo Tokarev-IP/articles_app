@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -14,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.articlesproject.main.data.data.DishData
 
 @Composable
 fun CreateDishItemCompose(
@@ -38,12 +40,7 @@ fun CreateDishItemCompose(
     corner: Dp,
     uri: Uri?,
     onPictureAdd: () -> Unit,
-    onAddDish: (
-        pictureUri: Uri?,
-        dishName: String,
-        dishPrice: String,
-        dishDescription: String,
-    ) -> Unit,
+    onAddDish: (DishData) -> Unit,
 ) {
 
     val pictureUri = rememberSaveable { mutableStateOf(null) }
@@ -52,73 +49,75 @@ fun CreateDishItemCompose(
     val dishDescription = rememberSaveable { mutableStateOf("") }
 
     Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(
+                color = Color.Red,
+                shape = RoundedCornerShape(corner)
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(
-                    color = Color.Red,
-                    shape = RoundedCornerShape(corner)
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = modifier.height(16.dp))
+        Spacer(modifier = modifier.height(16.dp))
 
-            if (pictureUri.value != null)
-                DishCreatePicture(
-                    uri = uri,
-                    corner = corner,
-                )
-            else {
-                AddPictureIcon(
-                    onPictureAdd = { onPictureAdd() },
-                    corner = corner,
-                )
-            }
-            Spacer(modifier = modifier.height(16.dp))
-            TextField(
-                valueText = dishName.value,
-                onText = {
-                    dishName.value = it
-                },
+        if (pictureUri.value != null)
+            DishCreatePicture(
+                uri = uri,
                 corner = corner,
-                keyboardType = KeyboardType.Text,
-                text = "Dish name",
             )
-            Spacer(modifier = modifier.height(16.dp))
-            TextField(
-                valueText = dishPrice.value,
-                onText = {
-                    dishPrice.value = it
-                },
+        else {
+            AddPictureIcon(
+                onPictureAdd = { onPictureAdd() },
                 corner = corner,
-                keyboardType = KeyboardType.Number,
-                text = "Dish price",
             )
-            Spacer(modifier = modifier.height(16.dp))
-            TextField(
-                valueText = dishDescription.value,
-                onText = {
-                    dishDescription.value = it
-                },
-                corner = corner,
-                keyboardType = KeyboardType.Text,
-                text = "Dish description",
-            )
-            Spacer(modifier = modifier.height(24.dp))
-            AddDishButton(
-                onAdd = {
-                    onAddDish(
+        }
+        Spacer(modifier = modifier.height(16.dp))
+        TextField(
+            valueText = dishName.value,
+            onText = {
+                dishName.value = it
+            },
+            corner = corner,
+            keyboardType = KeyboardType.Text,
+            text = "Dish name",
+        )
+        Spacer(modifier = modifier.height(16.dp))
+        TextField(
+            valueText = dishPrice.value,
+            onText = {
+                dishPrice.value = it
+            },
+            corner = corner,
+            keyboardType = KeyboardType.Number,
+            text = "Dish price",
+        )
+        Spacer(modifier = modifier.height(16.dp))
+        TextField(
+            valueText = dishDescription.value,
+            onText = {
+                dishDescription.value = it
+            },
+            corner = corner,
+            keyboardType = KeyboardType.Text,
+            text = "Dish description",
+        )
+        Spacer(modifier = modifier.height(24.dp))
+        AddDishButton(
+            onAdd = {
+                onAddDish(
+                    DishData(
                         pictureUri.value,
                         dishName.value,
-                        dishPrice.value,
+                        dishPrice.value.toInt(),
                         dishDescription.value,
                     )
-                }
-            )
-            Spacer(modifier = modifier.height(12.dp))
-        }
+                )
+                pictureUri.value = null
+                dishName.value = ""
+                dishPrice.value = ""
+                dishDescription.value = ""
+            }
+        )
     }
 }
 
@@ -151,8 +150,8 @@ fun DishCreatePicture(
 ) {
     AsyncImage(
         modifier = modifier
-            .width(200.dp)
-            .height(200.dp)
+            .width(120.dp)
+            .height(120.dp)
             .background(
                 shape = CircleShape,
                 color = Color.Unspecified,
@@ -171,8 +170,7 @@ fun AddPictureIcon(
 ) {
     Column(
         modifier = modifier
-            .width(200.dp)
-            .height(200.dp)
+            .height(120.dp)
             .background(
                 color = Color.Unspecified,
                 shape = CircleShape
@@ -191,7 +189,7 @@ fun AddPictureIcon(
 
 @Composable
 fun AddDishButton(onAdd: () -> Unit) {
-    TextButton(onClick = { onAdd() }) {
+    Button(onClick = { onAdd() }) {
         Icon(Icons.Filled.Add, contentDescription = "AddIcon")
         Text(text = "Add this dish")
     }
@@ -200,5 +198,9 @@ fun AddDishButton(onAdd: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LogInPreview() {
-    CreateDishItemCompose(corner = 24.dp, uri = null, onPictureAdd = {}, onAddDish = {pictureUri, dishName, dishPrice, dishDescription -> {} })
+    CreateDishItemCompose(
+        corner = 24.dp,
+        uri = null,
+        onPictureAdd = {},
+        onAddDish = { data: DishData -> {} })
 }

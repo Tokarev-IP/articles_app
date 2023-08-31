@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
 import com.example.articlesproject.main.data.CompressPicture
+import com.example.articlesproject.main.presentation.CreateMenuViewModel
 import com.example.articlesproject.main.presentation.MainActivityCompose
 import com.example.articlesproject.theme.ArticlesProjectTheme
 import com.google.firebase.ktx.Firebase
@@ -73,10 +74,10 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun StartUi() {
-        val mainViewModel = hiltViewModel<MainViewModel>()
+        val createMenuViewModel = hiltViewModel<CreateMenuViewModel>()
 
         MainActivityCompose(
-            mainViewModel = mainViewModel,
+            createMenuViewModel = createMenuViewModel,
             onSend = {sendPicture()},
         )
 

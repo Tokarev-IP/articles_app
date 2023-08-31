@@ -14,7 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.articlesproject.login.presentation.AuthViewModel
 import com.example.articlesproject.login.presentation.composable.screens.LogInScreenCompose
 import com.example.articlesproject.login.presentation.composable.screens.VerificationCodeScreenCompose
-import com.example.articlesproject.login.presentation.states.UiStates
+import com.example.articlesproject.login.presentation.states.UiStatesLogin
 
 @Composable
 fun NavHostCompose(
@@ -33,13 +33,13 @@ fun NavHostCompose(
     var showProgressIndicator by rememberSaveable { mutableStateOf(false) }
 
     when (state) {
-        is UiStates.CodeWasSent -> {
+        is UiStatesLogin.CodeWasSent -> {
             navController.navigate("EnterCode")
             haveGotCode = true
             showProgressIndicator = false
             Log.d("MYTAG", "navigate enterCode")
         }
-        is UiStates.Loading -> {
+        is UiStatesLogin.Loading -> {
             Log.d("MYTAG", "loading")
             showProgressIndicator = true
         }

@@ -1,7 +1,10 @@
 package com.example.articlesproject.main.presentation.screens.create
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,28 +12,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.main.data.data.DishData
+import com.example.articlesproject.main.data.data.MenuData
 
 @Composable
 fun CreateMenuScreenCompose(
     modifier: Modifier = Modifier,
-    dishList: List<DishData>,
-    typeList: List<String>,
+    menuDataList: List<MenuData>,
     corner: Dp,
+    onAddType: (String) -> Unit,
+    onAddDish: (DishData, Int) -> Unit,
+    onAdd: (numberOfType: Int) -> Unit,
 ) {
-    CreateDishTypesCompose(
-        types = typeList,
-        corner = corner,
-        onAdd = {/*TODO*/ },
-    )
-    Spacer(modifier = modifier.height(24.dp))
-
-    LazyColumn {
-        items(dishList.size)
-        {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxHeight()
+            .fillMaxWidth(),
+    ) {
+        item {
+            CreateDishTypesCompose(
+                menuDataList = menuDataList,
+                corner = corner,
+                onAddType = {
+                    onAddType(it)
+                },
+            )
+            Spacer(modifier = modifier.height(24.dp))
+        }
+        items(menuDataList.size) {
             CreateDishListCompose(
-                onAddDish = { /*TODO*/ },
-                dishList = dishList,
-                typeText = typeList[it]
+                onAddDish = { dishData: DishData ->
+                    onAddDish(dishData, it)
+                },
+                onAdd = { onAdd(it - 1) },
+                menuData = menuDataList[it],
             )
         }
     }
@@ -40,10 +54,20 @@ fun CreateMenuScreenCompose(
 @Composable
 fun CreateScreenPreview() {
     CreateMenuScreenCompose(
-        dishList = listOf(
-            DishData(null, "olevie", 150, "very tasty salad")
+        menuDataList = listOf(
+            MenuData(
+                "Salad", mutableListOf(
+                    DishData(null, "Olevie", 150, "Very tasty salad"),
+                    DishData(null, "Shuba", 170, "Very tasty salad"),
+                    DishData(null, "Vinegret", 130, "Very tasty salad"),
+                    DishData(null, "Craboviy", 140, "Very tasty salad"),
+                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
+                )
+            )
         ),
-        typeList = listOf("Main"),
-        corner = 24.dp
+        corner = 24.dp,
+        onAddDish = { DishData, Int -> },
+        onAddType = {},
+        onAdd = {},
     )
 }

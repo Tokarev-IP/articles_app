@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.articlesproject.login.data.interfaces.SignInCallbackInterface
 import com.example.articlesproject.login.domain.MyTime
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
-import com.example.articlesproject.login.domain.usecases.FirebaseResponseState
+import com.example.articlesproject.login.domain.usecases.states.FirebaseAuthResponseState
 import com.example.articlesproject.login.domain.usecases.GetCodeUseCase
 import com.example.articlesproject.login.domain.usecases.SignInUseCase
-import com.example.articlesproject.login.presentation.states.UiIntents
-import com.example.articlesproject.login.presentation.states.UiStates
+import com.example.articlesproject.login.presentation.states.UiIntentsLogin
+import com.example.articlesproject.login.presentation.states.UiStatesLogin
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -34,7 +34,7 @@ class AuthViewModel @Inject constructor(
     private val firebaseAuthUseCase: FirebaseAuthUseCase,
 ) : ViewModel(), SignInCallbackInterface {
 
-    private val uiState: MutableStateFlow<UiStates> = MutableStateFlow(UiStates.Nothing)
+    private val uiState: MutableStateFlow<UiStatesLogin> = MutableStateFlow(UiStatesLogin.Nothing)
     private val uiStateFlow = uiState.asStateFlow()
     fun getUiStateFlow() = uiStateFlow
 
@@ -56,16 +56,16 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun setIntent(intent: UiIntents) {
+    fun setIntent(intent: UiIntentsLogin) {
         when (intent) {
-            is UiIntents.GetCode -> {
-                uiState.value = UiStates.Loading
+            is UiIntentsLogin.GetCode -> {
+                uiState.value = UiStatesLogin.Loading
                 verifyPhone(intent.phoneAuthOptions)
                 setTimer(MyTime.TIME_OUT_TIME)
             }
 
-            is UiIntents.SendCode -> {
-                uiState.value = UiStates.Loading
+            is UiIntentsLogin.SendCode -> {
+                uiState.value = UiStatesLogin.Loading
                 sendVerificationCode(intent.code)
             }
         }
@@ -88,12 +88,12 @@ class AuthViewModel @Inject constructor(
             credential = credential,
             response = {
                 when (it) {
-                    is FirebaseResponseState.LoginCompletely -> {
-                        uiState.value = UiStates.Complete
+                    is FirebaseAuthResponseState.LoginCompletely -> {
+                        uiState.value = UiStatesLogin.Complete
                     }
 
-                    is FirebaseResponseState.LoginError -> {
-                        uiState.value = UiStates.Info(it.error)
+                    is FirebaseAuthResponseState.LoginError -> {
+                        uiState.value = UiStatesLogin.Info(it.error)
                     }
                 }
             }
@@ -139,19 +139,19 @@ class AuthViewModel @Inject constructor(
     override fun onAuthFailed(e: FirebaseException) {
         when (e) {
             is FirebaseAuthInvalidCredentialsException -> {
-                uiState.value = UiStates.Info("Incorrect mobile number")
+                uiState.value = UiStatesLogin.Info("Incorrect mobile number")
             }
 
             is FirebaseTooManyRequestsException -> {
-                uiState.value = UiStates.Info("Too many requests.Try again later")
+                uiState.value = UiStatesLogin.Info("Too many requests.Try again later")
             }
 
             is FirebaseNetworkException -> {
-                uiState.value = UiStates.Info("Network error")
+                uiState.value = UiStatesLogin.Info("Network error")
             }
 
             else -> {
-                uiState.value = UiStates.Info("Error")
+                uiState.value = UiStatesLogin.Info("Error")
             }
         }
     }
@@ -160,6 +160,6 @@ class AuthViewModel @Inject constructor(
         verificationId: String,
         token: PhoneAuthProvider.ForceResendingToken
     ) {
-        uiState.value = UiStates.CodeWasSent(verificationId, token)
+        uiState.value = UiStatesLogin.CodeWasSent(verificationId, token)
     }
 }

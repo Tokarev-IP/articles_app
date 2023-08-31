@@ -18,14 +18,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.articlesproject.main.MainViewModel
+import com.example.articlesproject.main.data.data.DishData
 import com.example.articlesproject.main.presentation.screens.PicturesCompose
+import com.example.articlesproject.main.presentation.screens.create.CreateDishItemCompose
 import com.example.articlesproject.main.presentation.screens.create.CreateMenuScreenCompose
+import com.example.articlesproject.main.presentation.states.UiStatesCreate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainActivityCompose(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel,
+    createMenuViewModel: CreateMenuViewModel,
     navController: NavHostController = rememberNavController(),
     startDestination: String = "CreateMenu",
     onSend: () -> Unit,
@@ -35,6 +38,12 @@ fun MainActivityCompose(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    val createMenuViewModelState by createMenuViewModel.getMenuDataListFlow().collectAsState()
+
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var addDishIndex by remember { mutableIntStateOf(0) }
 
     Scaffold(
         snackbarHost = {
@@ -83,41 +92,61 @@ fun MainActivityCompose(
         topBar = {
             TopAppBar(
                 title = {
-                            Text("Welcome", maxLines = 1)
+                    Text("Welcome", maxLines = 1)
 
                 },
                 navigationIcon = {
-                            IconButton(onClick = {
+                    IconButton(onClick = {
 
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.KeyboardArrowLeft,
-                                    contentDescription = "Go back"
-                                )
-                            }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowLeft,
+                            contentDescription = "Go back"
+                        )
+                    }
                 },
             )
         },
         content = { innerPadding ->
+            if (showBottomSheet)
+                ModalBottomSheet(
+                    onDismissRequest = { showBottomSheet = false },
+                    sheetState = sheetState,
+                ) {
+                    CreateDishItemCompose(
+                        corner = 24.dp,
+                        uri = null,
+                        onPictureAdd = {},
+                        onAddDish = { dishData: DishData ->
+                            createMenuViewModel.setIntent(
+                                UiStatesCreate.ToAddDish(
+                                    dishData,
+                                    0,
+                                )
+                            )
+                            showBottomSheet = false
+                        },
+                    )
+                }
 
             Column(
                 modifier = modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                NavigationBar(
-                    modifier = modifier
-                        .padding(innerPadding)
-                ) {
-                    items.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
-                            label = { Text(item) },
-                            selected = selectedItem == index,
-                            onClick = { selectedItem = index }
-                        )
-                    }
-                }
+//                NavigationBar(
+//                    modifier = modifier
+//                        .padding(innerPadding)
+//                ) {
+//                    items.forEachIndexed { index, item ->
+//                        NavigationBarItem(
+//                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
+//                            label = { Text(item) },
+//                            selected = selectedItem == index,
+//                            onClick = { selectedItem = index }
+//                        )
+//                    }
+//                }
             }
 
 //            Column(
@@ -138,11 +167,25 @@ fun MainActivityCompose(
             ) {
                 composable("CreateMenu") {
                     Log.d("MYTAG", "picture")
-//                    CreateMenuScreenCompose(
-//                        dishList = ,
-//                        typeList = ,
-//                        corner = 24.dp,
-//                    )
+                    CreateMenuScreenCompose(
+                        menuDataList = createMenuViewModelState,
+                        corner = 24.dp,
+                        onAddType = { dishType: String ->
+                            createMenuViewModel.setIntent(UiStatesCreate.ToAddDishType(dishType))
+                        },
+                        onAddDish = { dishData: DishData, indexOfType: Int ->
+                            createMenuViewModel.setIntent(
+                                UiStatesCreate.ToAddDish(
+                                    dishData,
+                                    indexOfType
+                                )
+                            )
+                        },
+                        onAdd = {
+                            showBottomSheet = true
+                            addDishIndex = it
+                        },
+                    )
                 }
 
 //                composable("EnterCode") {

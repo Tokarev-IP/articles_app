@@ -9,7 +9,7 @@ data class DishData(
     val description: String,
 )
 
-data class DishTypeData(
+data class MenuData(
     val type: String,
-    val dishesList: List<DishData>
+    val dishesList: MutableList<DishData>
 )

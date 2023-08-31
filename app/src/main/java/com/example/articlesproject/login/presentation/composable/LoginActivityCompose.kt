@@ -18,7 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.articlesproject.login.presentation.AuthViewModel
 import com.example.articlesproject.login.presentation.composable.screens.LogInScreenCompose
 import com.example.articlesproject.login.presentation.composable.screens.VerificationCodeScreenCompose
-import com.example.articlesproject.login.presentation.states.UiStates
+import com.example.articlesproject.login.presentation.states.UiStatesLogin
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,9 +41,9 @@ fun LoginActivityCompose(
     var showProgressIndicator by rememberSaveable { mutableStateOf(false) }
 
     when (state) {
-        is UiStates.Info -> {
+        is UiStatesLogin.Info -> {
             scope.launch {
-                with((state as UiStates.Info).info) {
+                with((state as UiStatesLogin.Info).info) {
                     Log.d("MYTAG", "snack bar")
                     snackbarHostState.showSnackbar(
                         message = this,
@@ -54,13 +54,13 @@ fun LoginActivityCompose(
             }
             showProgressIndicator = false
         }
-        is UiStates.CodeWasSent -> {
+        is UiStatesLogin.CodeWasSent -> {
             navController.navigate("EnterCode")
             haveGotCode = true
             showProgressIndicator = false
             Log.d("MYTAG", "navigate enterCode")
         }
-        is UiStates.Loading -> {
+        is UiStatesLogin.Loading -> {
             Log.d("MYTAG", "loading")
             showProgressIndicator = true
         }
