@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="maximum_of_letters_of_dish_type">30</integer>
+    <integer name="maximum_of_letters_of_dish_name">50</integer>
+    <integer name="maximum_of_letters_of_dish_description">500</integer>
+    <integer name="maximum_of_letters_of_dish_price">7</integer>
+    <integer name="one_row_lazy_grid_height">256</integer>
+    <integer name="two_rows_lazy_grid_height">524</integer>
+    <integer name="three_rows_lazy_grid_height">792</integer>
+</resources>

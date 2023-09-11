@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.AbsoluteCutCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,19 +20,22 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.articlesproject.R
 import com.example.articlesproject.main.data.data.DishData
 
 @Composable
@@ -42,8 +46,6 @@ fun CreateDishItemCompose(
     onPictureAdd: () -> Unit,
     onAddDish: (DishData) -> Unit,
 ) {
-
-    val pictureUri = rememberSaveable { mutableStateOf(null) }
     val dishName = rememberSaveable { mutableStateOf("") }
     val dishPrice = rememberSaveable { mutableStateOf("") }
     val dishDescription = rememberSaveable { mutableStateOf("") }
@@ -53,23 +55,17 @@ fun CreateDishItemCompose(
             .fillMaxWidth()
             .fillMaxHeight()
             .background(
-                color = Color.Red,
+                color = Color.Unspecified,
                 shape = RoundedCornerShape(corner)
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = modifier.height(16.dp))
 
-        if (pictureUri.value != null)
-            DishCreatePicture(
-                uri = uri,
-                corner = corner,
-            )
+        if (uri != null)
+            DishCreatePicture(uri = uri)
         else {
-            AddPictureIcon(
-                onPictureAdd = { onPictureAdd() },
-                corner = corner,
-            )
+            AddPictureIcon(onPictureAdd = { onPictureAdd() })
         }
         Spacer(modifier = modifier.height(16.dp))
         TextField(
@@ -79,7 +75,8 @@ fun CreateDishItemCompose(
             },
             corner = corner,
             keyboardType = KeyboardType.Text,
-            text = "Dish name",
+            labelText = "Dish name",
+            maximumOfLetters = integerResource(id = R.integer.maximum_of_letters_of_dish_name)
         )
         Spacer(modifier = modifier.height(16.dp))
         TextField(
@@ -89,7 +86,8 @@ fun CreateDishItemCompose(
             },
             corner = corner,
             keyboardType = KeyboardType.Number,
-            text = "Dish price",
+            labelText = "Dish price",
+            maximumOfLetters = integerResource(id = R.integer.maximum_of_letters_of_dish_price)
         )
         Spacer(modifier = modifier.height(16.dp))
         TextField(
@@ -99,25 +97,27 @@ fun CreateDishItemCompose(
             },
             corner = corner,
             keyboardType = KeyboardType.Text,
-            text = "Dish description",
+            labelText = "Dish description",
+            maximumOfLetters = integerResource(id = R.integer.maximum_of_letters_of_dish_description)
         )
         Spacer(modifier = modifier.height(24.dp))
         AddDishButton(
             onAdd = {
                 onAddDish(
                     DishData(
-                        pictureUri.value,
+                        uri,
                         dishName.value,
                         dishPrice.value.toInt(),
                         dishDescription.value,
                     )
                 )
-                pictureUri.value = null
+//                pictureUri.value = null
                 dishName.value = ""
                 dishPrice.value = ""
                 dishDescription.value = ""
             }
         )
+        Spacer(modifier = modifier.height(24.dp))
     }
 }
 
@@ -129,36 +129,43 @@ fun TextField(
     onText: (String) -> Unit,
     corner: Dp,
     keyboardType: KeyboardType,
-    text: String,
+    labelText: String,
+    maximumOfLetters: Int,
 ) {
     OutlinedTextField(
         value = valueText,
-        singleLine = true,
         shape = RoundedCornerShape(corner),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        label = { Text(text) },
+        label = { Text(labelText) },
         onValueChange = {
-            onText(it.trim())
-        })
+            if (valueText.length <= maximumOfLetters)
+                onText(it)
+        },
+        supportingText = {
+            Text(
+                text = stringResource(
+                    id = R.string.maximum_of_letters,
+                    valueText.length,
+                    maximumOfLetters
+                )
+            )
+        }
+    )
 }
 
 @Composable
 fun DishCreatePicture(
     modifier: Modifier = Modifier,
     uri: Uri?,
-    corner: Dp,
 ) {
     AsyncImage(
         modifier = modifier
-            .width(120.dp)
-            .height(120.dp)
-            .background(
-                shape = CircleShape,
-                color = Color.Unspecified,
-            ),
+            .width(160.dp)
+            .height(160.dp)
+            .clip(CircleShape),
         model = uri,
         contentDescription = "Picture of a dish",
-        contentScale = ContentScale.Fit,
+        contentScale = ContentScale.Crop,
     )
 }
 
@@ -166,22 +173,18 @@ fun DishCreatePicture(
 fun AddPictureIcon(
     modifier: Modifier = Modifier,
     onPictureAdd: () -> Unit,
-    corner: Dp,
 ) {
     Column(
         modifier = modifier
-            .height(120.dp)
-            .background(
-                color = Color.Unspecified,
-                shape = CircleShape
-            ),
+            .width(320.dp)
+            .clip(CircleShape)
+            .clickable { onPictureAdd() },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             Icons.Filled.Add,
             contentDescription = "AddPictureIcon",
-            Modifier.clickable { onPictureAdd() }
         )
         Text(text = "Choose picture of the dish")
     }

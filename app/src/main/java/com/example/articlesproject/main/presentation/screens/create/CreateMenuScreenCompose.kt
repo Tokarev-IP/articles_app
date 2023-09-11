@@ -4,8 +4,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,13 +21,13 @@ fun CreateMenuScreenCompose(
     menuDataList: List<MenuData>,
     corner: Dp,
     onAddType: (String) -> Unit,
-    onAddDish: (DishData, Int) -> Unit,
     onAdd: (numberOfType: Int) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier
             .fillMaxHeight()
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
     ) {
         item {
             CreateDishTypesCompose(
@@ -37,14 +38,15 @@ fun CreateMenuScreenCompose(
                 },
             )
             Spacer(modifier = modifier.height(24.dp))
+            Divider(
+                modifier.fillMaxWidth(),
+                thickness = 1.dp,
+            )
         }
-        items(menuDataList.size) {
+        items(menuDataList.size) { index ->
             CreateDishListCompose(
-                onAddDish = { dishData: DishData ->
-                    onAddDish(dishData, it)
-                },
-                onAdd = { onAdd(it - 1) },
-                menuData = menuDataList[it],
+                onAdd = { onAdd(index) },
+                menuData = menuDataList[index],
             )
         }
     }
@@ -66,7 +68,6 @@ fun CreateScreenPreview() {
             )
         ),
         corner = 24.dp,
-        onAddDish = { DishData, Int -> },
         onAddType = {},
         onAdd = {},
     )

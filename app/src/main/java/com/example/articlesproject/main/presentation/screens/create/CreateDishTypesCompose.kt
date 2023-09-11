@@ -1,14 +1,9 @@
 package com.example.articlesproject.main.presentation.screens.create
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -22,10 +17,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.articlesproject.R
 import com.example.articlesproject.main.data.data.DishData
 import com.example.articlesproject.main.data.data.MenuData
 
@@ -38,22 +37,24 @@ fun CreateDishTypesCompose(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxWidth(),
     ) {
+        Spacer(modifier = modifier.height(24.dp))
         CreateDishType(
             corner = corner,
             onAddType = {
-                onAddType(it)
+                onAddType(it.trim())
             },
         )
         Spacer(modifier = modifier.height(16.dp))
+        var j = 0
         for (i in menuDataList) {
+            j++
             Text(
-                text = i.type,
-                modifier = modifier.width(200.dp)
+                text = stringResource(R.string.type_of_dish, j, i.type),
+                modifier = modifier,
+                fontSize = 20.sp
             )
-            Spacer(modifier = modifier.height(8.dp))
         }
     }
 }
@@ -66,24 +67,26 @@ fun CreateDishType(
 ) {
     val type = rememberSaveable { mutableStateOf("") }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         CreateTypeTextField(
             valueText = type.value,
             onText = { type.value = it },
             corner = corner,
-            text = "Write dish type"
+            text = "Write dish type",
+            maximumOfLetters = integerResource(id = R.integer.maximum_of_letters_of_dish_type)
         )
-
+        Spacer(modifier = modifier.height(12.dp))
         Button(
+            modifier = modifier,
             onClick = {
                 onAddType(type.value)
                 type.value = ""
-            }
+            },
+            enabled = type.value.isNotEmpty()
         ) {
             Icon(Icons.Filled.Add, contentDescription = "AddIcon")
             Text(text = "Add type")
@@ -99,17 +102,27 @@ fun CreateTypeTextField(
     onText: (String) -> Unit,
     corner: Dp,
     text: String,
+    maximumOfLetters: Int,
 ) {
     OutlinedTextField(
         value = valueText,
-        singleLine = true,
         shape = RoundedCornerShape(corner),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         label = { Text(text) },
-        modifier = modifier.width(200.dp),
         onValueChange = {
-            onText(it.trim())
-        })
+            if (it.length <= maximumOfLetters)
+                onText(it)
+        },
+        supportingText = {
+            Text(
+                stringResource(
+                    id = R.string.maximum_of_letters,
+                    valueText.length,
+                    maximumOfLetters
+                )
+            )
+        }
+    )
 }
 
 @Preview(showBackground = true)

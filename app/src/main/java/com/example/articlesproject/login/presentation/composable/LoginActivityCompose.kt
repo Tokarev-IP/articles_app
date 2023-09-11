@@ -47,7 +47,7 @@ fun LoginActivityCompose(
                     Log.d("MYTAG", "snack bar")
                     snackbarHostState.showSnackbar(
                         message = this,
-                        actionLabel = "Ok",
+                        actionLabel = "Result of action",
                         duration = SnackbarDuration.Short
                     )
                 }

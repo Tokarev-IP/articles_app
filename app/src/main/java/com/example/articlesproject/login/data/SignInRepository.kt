@@ -63,12 +63,3 @@ class SignInRepository @Inject constructor() :
         return PhoneAuthProvider.getCredential(verificationId, code)
     }
 }
-
-//    interface SignInCallbackInterface {
-//        fun onAuthComplete(credential: PhoneAuthCredential)
-//        fun onAuthFailed(e: FirebaseException)
-//        fun onAuthCodeWasSent(
-//            verificationId: String,
-//            token: PhoneAuthProvider.ForceResendingToken
-//        )
-//    }

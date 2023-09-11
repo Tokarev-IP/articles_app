@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,9 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.articlesproject.main.MainViewModel
 import com.example.articlesproject.main.data.data.DishData
-import com.example.articlesproject.main.presentation.screens.PicturesCompose
 import com.example.articlesproject.main.presentation.screens.create.CreateDishItemCompose
 import com.example.articlesproject.main.presentation.screens.create.CreateMenuScreenCompose
 import com.example.articlesproject.main.presentation.states.UiStatesCreate
@@ -32,6 +27,7 @@ fun MainActivityCompose(
     navController: NavHostController = rememberNavController(),
     startDestination: String = "CreateMenu",
     onSend: () -> Unit,
+    onPictureOfDishChoose: () -> Unit,
 ) {
     var selectedItem by remember { mutableStateOf(0) }
     val items = listOf("Songs", "Artists", "Playlists")
@@ -40,34 +36,61 @@ fun MainActivityCompose(
     val scope = rememberCoroutineScope()
 
     val createMenuViewModelState by createMenuViewModel.getMenuDataListFlow().collectAsState()
+    val uriOfPictureOfDish by createMenuViewModel.getUriOfPictureFlow().collectAsState()
 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var addDishIndex by remember { mutableIntStateOf(0) }
+    var indexOfNewDish by remember { mutableIntStateOf(0) }
+
+//    when (state) {
+//        is UiStatesLogin.Info -> {
+//            scope.launch {
+//                with((state as UiStatesLogin.Info).info) {
+//                    Log.d("MYTAG", "snack bar")
+//                    snackbarHostState.showSnackbar(
+//                        message = this,
+//                        actionLabel = "Result of action",
+//                        duration = SnackbarDuration.Short
+//                    )
+//                }
+//            }
+//            showProgressIndicator = false
+//        }
+//        is UiStatesLogin.CodeWasSent -> {
+//            navController.navigate("EnterCode")
+//            haveGotCode = true
+//            showProgressIndicator = false
+//            Log.d("MYTAG", "navigate enterCode")
+//        }
+//        is UiStatesLogin.Loading -> {
+//            Log.d("MYTAG", "loading")
+//            showProgressIndicator = true
+//        }
+//    }
 
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data: SnackbarData ->
 
-                val buttonColor = if (true) {
-                    ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                } else {
-                    ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.inversePrimary
-                    )
-                }
+//                val buttonColor = if (true) {
+//                    ButtonDefaults.textButtonColors(
+//                        containerColor = MaterialTheme.colorScheme.errorContainer,
+//                        contentColor = MaterialTheme.colorScheme.error
+//                    )
+//                } else {
+//                    ButtonDefaults.textButtonColors(
+//                        contentColor = MaterialTheme.colorScheme.inversePrimary
+//                    )
+//                }
 
                 Snackbar(
                     modifier = Modifier
                         .padding(24.dp),
-                    action = {
-                        TextButton(
-                            onClick = { data.dismiss() },
-                        ) { Text(data.visuals.actionLabel ?: "") }
-                    }
+//                    action = {
+//                        TextButton(
+//                            onClick = { data.dismiss() },
+//                        ) { Text(data.visuals.actionLabel ?: "") }
+//                    }
                 ) {
                     Text(data.visuals.message)
                 }
@@ -89,24 +112,24 @@ fun MainActivityCompose(
 //                }
 //            ) { Text("Show snackbar") }
 //        },
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("Welcome", maxLines = 1)
-
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowLeft,
-                            contentDescription = "Go back"
-                        )
-                    }
-                },
-            )
-        },
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text("Welcome", maxLines = 1)
+//
+//                },
+//                navigationIcon = {
+//                    IconButton(onClick = {
+//
+//                    }) {
+//                        Icon(
+//                            imageVector = Icons.Filled.KeyboardArrowLeft,
+//                            contentDescription = "Go back"
+//                        )
+//                    }
+//                },
+//            )
+//        },
         content = { innerPadding ->
             if (showBottomSheet)
                 ModalBottomSheet(
@@ -115,16 +138,17 @@ fun MainActivityCompose(
                 ) {
                     CreateDishItemCompose(
                         corner = 24.dp,
-                        uri = null,
-                        onPictureAdd = {},
+                        uri = uriOfPictureOfDish,
+                        onPictureAdd = { onPictureOfDishChoose() },
                         onAddDish = { dishData: DishData ->
                             createMenuViewModel.setIntent(
                                 UiStatesCreate.ToAddDish(
                                     dishData,
-                                    0,
+                                    indexOfNewDish,
                                 )
                             )
                             showBottomSheet = false
+                            createMenuViewModel.setIntent(uiIntent = UiStatesCreate.ToChoosePicture(null))
                         },
                     )
                 }
@@ -173,17 +197,9 @@ fun MainActivityCompose(
                         onAddType = { dishType: String ->
                             createMenuViewModel.setIntent(UiStatesCreate.ToAddDishType(dishType))
                         },
-                        onAddDish = { dishData: DishData, indexOfType: Int ->
-                            createMenuViewModel.setIntent(
-                                UiStatesCreate.ToAddDish(
-                                    dishData,
-                                    indexOfType
-                                )
-                            )
-                        },
                         onAdd = {
                             showBottomSheet = true
-                            addDishIndex = it
+                            indexOfNewDish = it
                         },
                     )
                 }

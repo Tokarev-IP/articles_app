@@ -1,5 +1,6 @@
 package com.example.articlesproject.main.presentation
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
@@ -17,30 +18,42 @@ class CreateMenuViewModel @Inject constructor() : ViewModel() {
     private val menuDataList: MutableStateFlow<MutableList<MenuData>> =
         MutableStateFlow(mutableStateListOf())
     private val menuDataListFlow = menuDataList.asStateFlow()
+    private val uriOfPicture: MutableStateFlow<Uri?> = MutableStateFlow(null)
+    private val uriOfPictureFlow = uriOfPicture.asStateFlow()
 
-    private fun toAddDishType(type: String) {
+    private fun addDishType(type: String) {
         val data = MenuData(type, mutableListOf())
         menuDataList.value.add(data)
     }
 
-    private fun toAddDishData(dish: DishData, index: Int) {
-        menuDataList.value[0].dishesList.add(dish)
+    private fun addDishData(dish: DishData, index: Int) {
+        menuDataList.value[index].dishesList.add(dish)
     }
 
     fun getMenuDataListFlow() = menuDataListFlow
 
+    fun getUriOfPictureFlow() = uriOfPictureFlow
+    private fun setUriOfPicture(uri: Uri?) {
+        uriOfPicture.value = uri
+    }
+
     fun setIntent(uiIntent: UiStatesCreate) {
         when (uiIntent) {
             is UiStatesCreate.ToAddDishType -> {
-                toAddDishType(uiIntent.type)
+                addDishType(uiIntent.type)
             }
 
             is UiStatesCreate.ToAddDish -> {
-                toAddDishData(uiIntent.dish, uiIntent.index)
+                addDishData(uiIntent.dish, uiIntent.index)
             }
 
-            is UiStatesCreate.ToSaveMenu -> {}
-            is UiStatesCreate.ToChoosePicture -> {}
+            is UiStatesCreate.ToSaveMenu -> {
+
+            }
+
+            is UiStatesCreate.ToChoosePicture -> {
+                setUriOfPicture(uiIntent.uri)
+            }
         }
 
     }

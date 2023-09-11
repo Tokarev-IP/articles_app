@@ -17,9 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
-import com.example.articlesproject.main.data.CompressPicture
 import com.example.articlesproject.main.presentation.CreateMenuViewModel
 import com.example.articlesproject.main.presentation.MainActivityCompose
+import com.example.articlesproject.main.presentation.states.UiStatesCreate
 import com.example.articlesproject.theme.ArticlesProjectTheme
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -30,7 +30,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val mainViewModel: MainViewModel by viewModels()
+    private val createMenuViewModel: CreateMenuViewModel by viewModels()
 
     @Inject
     lateinit var firebaseAuthUseCase: FirebaseAuthUseCase
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
 //    private val fileName = "space.jpg"
 //    var spaceRef = imagesRef.child(fileName)
 
-    lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +59,13 @@ class MainActivity : ComponentActivity() {
         }
 
         pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+//            createMenuViewModel.setIntent(uiIntent = UiStatesCreate.ToChoosePicture(uri))
             // Callback is invoked after the user selects a media item or closes the
             // photo picker.
             if (uri != null) {
                 Log.d("PhotoPicker", "Selected URI: $uri")
                 Log.d("PhotoPicker", "Selected URI: ${uri.path}")
-                mainViewModel.setImageUri(uri)
+                createMenuViewModel.setIntent(uiIntent = UiStatesCreate.ToChoosePicture(uri))
             } else {
                 Log.d("PhotoPicker", "No media selected")
             }
@@ -78,7 +79,8 @@ class MainActivity : ComponentActivity() {
 
         MainActivityCompose(
             createMenuViewModel = createMenuViewModel,
-            onSend = {sendPicture()},
+            onSend = { sendPicture() },
+            onPictureOfDishChoose = { pickUpPicture() }
         )
 
 //        TextCompose(
@@ -134,27 +136,30 @@ class MainActivity : ComponentActivity() {
         startActivityForResult(intent, 123)
     }
 
-    private fun pickUp() {
-//        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-//            // Callback is invoked after the user selects a media item or closes the
-//            // photo picker.
-//            if (uri != null) {
-//                Log.d("PhotoPicker", "Selected URI: $uri")
-//                Log.d("PhotoPicker", "Selected URI: ${uri.path}")
-//                mainViewModel.setImageUri(uri)
-//            } else {
-//                Log.d("PhotoPicker", "No media selected")
-//            }
-//        }
-
+    private fun pickUpPicture() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
     }
 
-    fun sendPicture() {
+    private fun sendPicture() {
         val userId = firebaseAuthUseCase.getAuthId()
 
 //        userId?.let {userIdString ->
 //            storage.getReference("photos/image/").child(userIdString).putFile(mainViewModel.uri)
+//                .addOnSuccessListener {
+//                    Log.d("MYTAG_LOAD", "loadSuccess")
+//                }
+//                .addOnCompleteListener {
+//                    Log.d("MYTAG_LOAD", "loadComplete")
+//                }
+//                .addOnFailureListener {
+//                    Log.d("MYTAG_LOAD", "loadFailed + $it")
+//                }
+//        }
+
+        userId?.let { userIdString ->
+//            storage.getReference("photos/image/").child(userIdString).putBytes(
+//                CompressPicture().compressImage(this, null 1920, 1080,50)
+//            )
 //                .addOnSuccessListener {
 //                    Log.d("MYTAG_LOAD", "loadSuccess")
 //                }
@@ -164,21 +169,6 @@ class MainActivity : ComponentActivity() {
 //                .addOnFailureListener {
 //                    Log.d("MYTAG_LOAD", "loadFailed + $it")
 //                }
-//        }
-
-        userId?.let {userIdString ->
-            storage.getReference("photos/image/").child(userIdString).putBytes(
-                CompressPicture().compressImage(this,mainViewModel.uri, 1920, 1080,50)
-            )
-                .addOnSuccessListener {
-                    Log.d("MYTAG_LOAD", "loadSuccess")
-                }
-                .addOnCompleteListener {
-                    Log.d("MYTAG_LOAD", "loadSuccess")
-                }
-                .addOnFailureListener {
-                    Log.d("MYTAG_LOAD", "loadFailed + $it")
-                }
         }
 
 //        storageRef.putFile(mainViewModel.uri)
