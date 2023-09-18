@@ -13,11 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
-import com.example.articlesproject.theme.ArticlesProjectTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +86,6 @@ fun VerificationCodeScreenCompose(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodeTextField(
     modifier: Modifier = Modifier,
@@ -106,7 +103,7 @@ fun CodeTextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         label = { Text(text = stringResource(id = R.string.code)) },
         maxLines = 1,
-        enabled = isActive,
+//        enabled = isActive,
         onValueChange = {
             if (it.length <= 6)
                 onCode(it.trim())
@@ -146,10 +143,4 @@ fun GetCodeAgainButton(
     ) {
         Text(text = "$timer ${stringResource(id = R.string.get_code_again)}")
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ArticlesProjectTheme() {}
 }

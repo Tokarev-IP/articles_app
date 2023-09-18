@@ -55,6 +55,9 @@ class CreateMenuViewModel @Inject constructor() : ViewModel() {
                 setUriOfPicture(uiIntent.uri)
             }
         }
+    }
+
+    fun testLoad(){
 
     }
 }

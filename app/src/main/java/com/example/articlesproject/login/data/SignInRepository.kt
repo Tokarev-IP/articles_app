@@ -10,15 +10,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SignInRepository @Inject constructor() :
+class SignInRepository @Inject constructor(private val signInCallbackInterface: SignInCallbackInterface) :
     PhoneAuthProvider.OnVerificationStateChangedCallbacks(), SignInInterface {
-
-    private lateinit var signInCallbackInterface: SignInCallbackInterface
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
         Log.d("MYTAG", "onVerificationCompleted:$credential")
         signInCallbackInterface.onAuthComplete(credential)
-//        authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.AutoSignIn(credential))
     }
 
     override fun onVerificationFailed(e: FirebaseException) {
@@ -26,24 +23,6 @@ class SignInRepository @Inject constructor() :
         // for instance if the the phone number format is not valid.
         Log.w("MYTAG", "onVerificationFailed", e)
         signInCallbackInterface.onAuthFailed(e)
-
-//        when (e) {
-//            is FirebaseAuthInvalidCredentialsException -> {
-//                Log.d("MYTAG", "error")
-//                val a =
-//                    authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Incorrect mobile number"))
-//                Log.d("MYTAG", a.toString())
-//            }
-//            is FirebaseTooManyRequestsException -> {
-//                authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Too many requests.Try again later"))
-//            }
-//            is FirebaseNetworkException -> {
-//                authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Network error"))
-//            }
-//            else -> {
-//                authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.Info("Error"))
-//            }
-//        }
     }
 
     override fun onCodeSent(
@@ -52,7 +31,6 @@ class SignInRepository @Inject constructor() :
     ) {
         Log.d("MYTAG", "onCodeSent")
         signInCallbackInterface.onAuthCodeWasSent(verificationId, token)
-//        authResponseFlowUseCase.setItemInFlow(AuthResponseFlow.AuthData.CodeWasSent(verificationId, token))
     }
 
     override fun getCredential(

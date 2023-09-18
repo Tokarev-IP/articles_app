@@ -1,5 +1,7 @@
 package com.example.articlesproject.main
 
+import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,10 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
+import com.example.articlesproject.main.data.FirestoreDatabase
+import com.example.articlesproject.main.data.data.MenuData
 import com.example.articlesproject.main.presentation.CreateMenuViewModel
 import com.example.articlesproject.main.presentation.MainActivityCompose
 import com.example.articlesproject.main.presentation.states.UiStatesCreate
 import com.example.articlesproject.theme.ArticlesProjectTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -70,11 +76,51 @@ class MainActivity : ComponentActivity() {
                 Log.d("PhotoPicker", "No media selected")
             }
         }
-
     }
 
     @Composable
     fun StartUi() {
+        val user = hashMapOf(
+            "first" to "Ada",
+            "last" to "Lovelace",
+            "born" to 1815
+        )
+
+        FirebaseAuth.getInstance().uid?.let {
+            FirestoreDatabase().uploadTypesOfMenuData(
+                "menus",
+                it,
+            )
+        }
+
+//        Firebase.firestore.collection("test0/test1/test2/test3").document("your_custom_id")
+//            .set(user)
+//            .addOnSuccessListener { documentReference ->
+//                Log.d("DAVAI", "DocumentSnapshot added with ID: $documentReference")
+//            }
+//            .addOnFailureListener { e ->
+//                Log.w("DAVAI", "Error adding document", e)
+//            }
+//
+//        Firebase.firestore.collection("/menus/")
+//            .get()
+//            .addOnSuccessListener { result ->
+//                for (document in result.documents) {
+//                    Log.d("DAVAI", "${document.id} => ${document.data?.get("types")}")
+//
+//                    val a = document.data?.keys
+//                    if (a != null) {
+//                        Log.d("DAVAI", a.elementAt(0))
+//                    }
+//                    val b = document.data?.entries
+//                    Log.d("DAVAI", b.toString())
+//                }
+//                Log.d("DAVAI", result.documents.toString())
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.w("DAVAI", "Error getting documents.", exception)
+//            }
+
         val createMenuViewModel = hiltViewModel<CreateMenuViewModel>()
 
         MainActivityCompose(

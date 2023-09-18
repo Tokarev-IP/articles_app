@@ -1,11 +1,14 @@
 package com.example.articlesproject.login.domain.modules
 
 import com.example.articlesproject.login.data.FirebaseAuthRepository
-import com.example.articlesproject.login.data.SignInRepository
 import com.example.articlesproject.login.data.GetAuthCodeRepository
+import com.example.articlesproject.login.data.SignInRepository
+import com.example.articlesproject.login.data.interfaces.SignInCallbackInterface
 import com.example.articlesproject.login.domain.interfaces.FirebaseAuthInterface
 import com.example.articlesproject.login.domain.interfaces.GetAuthCodeInterface
 import com.example.articlesproject.login.domain.interfaces.SignInInterface
+import com.example.articlesproject.login.domain.usecases.SignInCallback
+import com.example.articlesproject.login.presentation.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
@@ -29,6 +32,9 @@ interface AuthModule {
     @Binds
     fun bindFirebaseAuthInterface(impl: FirebaseAuthRepository): FirebaseAuthInterface
 
+    @Singleton
+    @Binds
+    fun bindSignInCallbackInterface(impl: SignInCallback): SignInCallbackInterface
 }
 
 @Module

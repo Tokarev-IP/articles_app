@@ -19,18 +19,16 @@ class StorageFirebase @Inject constructor(
     override fun uploadFileFirebase(
         uri: Uri,
         onSuccessful: () -> Unit,
-        onError:( exception: Exception) -> Unit,
-        ) {
+        onError: (exception: Exception) -> Unit,
+    ) {
         val userId = firebaseAuthInterface.getAuthId()
-        userId?.let {
-            storage.getReference(it).child(uri.toString()).putFile(uri)
+        userId?.let { id ->
+            storage.getReference(id).child(uri.toString()).putFile(uri)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-
+                        onSuccessful()
                     } else {
-                        when (it.exception) {
-
-                        }
+                        it.exception?.let { error -> onError(error) }
                     }
                 }
         }
