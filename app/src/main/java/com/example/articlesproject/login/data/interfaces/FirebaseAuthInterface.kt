@@ -1,4 +1,4 @@
-package com.example.articlesproject.login.domain.interfaces
+package com.example.articlesproject.login.data.interfaces
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

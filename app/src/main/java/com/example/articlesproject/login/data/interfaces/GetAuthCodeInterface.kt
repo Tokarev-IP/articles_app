@@ -1,4 +1,4 @@
-package com.example.articlesproject.login.domain.interfaces
+package com.example.articlesproject.login.data.interfaces
 
 import com.google.firebase.auth.PhoneAuthOptions
 

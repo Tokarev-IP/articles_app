@@ -1,4 +1,4 @@
-package com.example.articlesproject.main.domain.interfaces
+package com.example.articlesproject.main.data.data.firestore.interfaces
 
 import android.net.Uri
 

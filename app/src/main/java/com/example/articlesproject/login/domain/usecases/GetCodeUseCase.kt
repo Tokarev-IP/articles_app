@@ -1,6 +1,6 @@
 package com.example.articlesproject.login.domain.usecases
 
-import com.example.articlesproject.login.domain.interfaces.GetAuthCodeInterface
+import com.example.articlesproject.login.data.interfaces.GetAuthCodeInterface
 import com.google.firebase.auth.PhoneAuthOptions
 import javax.inject.Inject
 import javax.inject.Singleton

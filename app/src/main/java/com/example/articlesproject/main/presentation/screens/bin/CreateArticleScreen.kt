@@ -1,4 +1,4 @@
-package com.example.articlesproject.main.presentation.screens
+package com.example.articlesproject.main.presentation.screens.bin
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Column

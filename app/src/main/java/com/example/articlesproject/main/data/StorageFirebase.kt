@@ -1,9 +1,8 @@
 package com.example.articlesproject.main.data
 
 import android.net.Uri
-import android.util.Log
-import com.example.articlesproject.login.domain.interfaces.FirebaseAuthInterface
-import com.example.articlesproject.main.domain.interfaces.StorageFirebaseInterface
+import com.example.articlesproject.login.data.interfaces.FirebaseAuthInterface
+import com.example.articlesproject.main.data.data.firestore.interfaces.StorageFirebaseInterface
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import javax.inject.Inject
@@ -21,8 +20,8 @@ class StorageFirebase @Inject constructor(
         onSuccessful: () -> Unit,
         onError: (exception: Exception) -> Unit,
     ) {
-        val userId = firebaseAuthInterface.getAuthId()
-        userId?.let { id ->
+        val authId = firebaseAuthInterface.getAuthId()
+        authId?.let { id ->
             storage.getReference(id).child(uri.toString()).putFile(uri)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {

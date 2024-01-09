@@ -14,6 +14,14 @@
     <string name="type_of_dish">%1$d %2$s </string>
     <string name="maximum_of_letters">%1$d out of %2$d </string>
     <string name="currency">%1$d $ </string>
+    <string name="invalid_credential_exception">Invalid Credentials Exception</string>
+    <string name="too_many_requests_exception">Too many requests. Try again later</string>
+    <string name="network_exception">Network error</string>
+    <string name="server_exception">Server error</string>
+    <string name="phone_number_exception">The phone number format is not valid</string>
+    <string name="create_a_new_dish">Create a new dish</string>
+    <string name="edit_a_dish_list">Edit a list</string>
+    <string name="edit_a_dish_type">Edit a type</string>
 
 
     <!-- Strings used for fragments for navigation -->

@@ -1,4 +1,4 @@
-package com.example.articlesproject.main.presentation.screens.create
+package com.example.articlesproject.main.presentation.screens.bin
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.DishData
 import com.example.articlesproject.main.data.data.MenuData
 
 @Composable
@@ -50,11 +47,11 @@ fun CreateDishTypesCompose(
         var j = 0
         for (i in menuDataList) {
             j++
-            Text(
-                text = stringResource(R.string.type_of_dish, j, i.type),
-                modifier = modifier,
-                fontSize = 20.sp
-            )
+//            Text(
+//                text = stringResource(R.string.type_of_dish, j, i.type),
+//                modifier = modifier,
+//                fontSize = 20.sp
+//            )
         }
     }
 }
@@ -122,43 +119,5 @@ fun CreateTypeTextField(
                 )
             )
         }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DishTypesPreview() {
-    CreateDishTypesCompose(
-        menuDataList = listOf(
-            MenuData(
-                "Salad", mutableListOf(
-                    DishData(null, "Olevie", 150, "Very tasty salad"),
-                    DishData(null, "Shuba", 170, "Very tasty salad"),
-                    DishData(null, "Vinegret", 130, "Very tasty salad"),
-                    DishData(null, "Craboviy", 140, "Very tasty salad"),
-                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
-                )
-            ),
-            MenuData(
-                "Salad", mutableListOf(
-                    DishData(null, "Olevie", 150, "Very tasty salad"),
-                    DishData(null, "Shuba", 170, "Very tasty salad"),
-                    DishData(null, "Vinegret", 130, "Very tasty salad"),
-                    DishData(null, "Craboviy", 140, "Very tasty salad"),
-                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
-                )
-            ),
-            MenuData(
-                "Salad", mutableListOf(
-                    DishData(null, "Olevie", 150, "Very tasty salad"),
-                    DishData(null, "Shuba", 170, "Very tasty salad"),
-                    DishData(null, "Vinegret", 130, "Very tasty salad"),
-                    DishData(null, "Craboviy", 140, "Very tasty salad"),
-                    DishData(null, "Ovoshnoy", 120, "Very tasty salad"),
-                )
-            )
-        ),
-        corner = 24.dp,
-        onAddType = {}
     )
 }

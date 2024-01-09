@@ -1,7 +1,5 @@
 package com.example.articlesproject.main
 
-import android.content.ContentValues
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -19,14 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
-import com.example.articlesproject.main.data.FirestoreDatabase
-import com.example.articlesproject.main.data.data.MenuData
 import com.example.articlesproject.main.presentation.CreateMenuViewModel
 import com.example.articlesproject.main.presentation.MainActivityCompose
-import com.example.articlesproject.main.presentation.states.UiStatesCreate
+import com.example.articlesproject.main.presentation.states.UiIntents
 import com.example.articlesproject.theme.ArticlesProjectTheme
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -45,8 +39,6 @@ class MainActivity : ComponentActivity() {
     private var storageRef = storage.reference
     private var imagesRef: StorageReference =
         storageRef.child("gs://articles-app-8b12b.appspot.com/photo.jpg")
-//    private val fileName = "space.jpg"
-//    var spaceRef = imagesRef.child(fileName)
 
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
 
@@ -54,7 +46,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ArticlesProjectTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -71,7 +62,7 @@ class MainActivity : ComponentActivity() {
             if (uri != null) {
                 Log.d("PhotoPicker", "Selected URI: $uri")
                 Log.d("PhotoPicker", "Selected URI: ${uri.path}")
-                createMenuViewModel.setIntent(uiIntent = UiStatesCreate.ToChoosePicture(uri))
+                createMenuViewModel.setIntent(uiIntent = UiIntents.ToChoosePicture(uri))
             } else {
                 Log.d("PhotoPicker", "No media selected")
             }
@@ -80,81 +71,23 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun StartUi() {
-        val user = hashMapOf(
-            "first" to "Ada",
-            "last" to "Lovelace",
-            "born" to 1815
-        )
 
-        FirebaseAuth.getInstance().uid?.let {
-            FirestoreDatabase().uploadTypesOfMenuData(
-                "menus",
-                it,
-            )
-        }
-
-//        Firebase.firestore.collection("test0/test1/test2/test3").document("your_custom_id")
-//            .set(user)
-//            .addOnSuccessListener { documentReference ->
-//                Log.d("DAVAI", "DocumentSnapshot added with ID: $documentReference")
-//            }
-//            .addOnFailureListener { e ->
-//                Log.w("DAVAI", "Error adding document", e)
-//            }
-//
-//        Firebase.firestore.collection("/menus/")
-//            .get()
-//            .addOnSuccessListener { result ->
-//                for (document in result.documents) {
-//                    Log.d("DAVAI", "${document.id} => ${document.data?.get("types")}")
-//
-//                    val a = document.data?.keys
-//                    if (a != null) {
-//                        Log.d("DAVAI", a.elementAt(0))
-//                    }
-//                    val b = document.data?.entries
-//                    Log.d("DAVAI", b.toString())
-//                }
-//                Log.d("DAVAI", result.documents.toString())
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.w("DAVAI", "Error getting documents.", exception)
-//            }
+//        FirestoreDatabase().uploadTypesOfMenuData("path", "menu")
 
         val createMenuViewModel = hiltViewModel<CreateMenuViewModel>()
 
         MainActivityCompose(
             createMenuViewModel = createMenuViewModel,
-            onSend = { sendPicture() },
-            onPictureOfDishChoose = { pickUpPicture() }
+            onPictureWasChosen = {
+                pickUpPicture()
+            },
+            onSaveDish = {
+                createMenuViewModel.setIntent(uiIntent = UiIntents.ToAddDish(it))
+            },
+            onSaveType = {
+                createMenuViewModel.setIntent(uiIntent = UiIntents.ToAddType(it))
+            },
         )
-
-//        TextCompose(
-//            onChooseFile = {
-//                pickUp()
-//            },
-//            mainViewModel = mainViewModel,
-//            onSendPhoto = {
-//                    storage.getReference("photos/image/").child("/path/").putFile(mainViewModel.uri)
-//                        .addOnSuccessListener {
-//                            Log.d("MYTAG_LOAD", "loadSuccess")
-//                        }
-//                        .addOnCompleteListener {
-//                            Log.d("MYTAG_LOAD", "loadSuccess")
-//                        }
-//                        .addOnFailureListener {
-//                            Log.d("MYTAG_LOAD", "loadFailed + $it")
-//                        }
-
-//                    storageRef.putFile(mainViewModel.uri)
-//                        .addOnSuccessListener {
-//                            Log.d("MYTAG_LOAD", "loadSuccess")
-//                        }
-//                        .addOnFailureListener {
-//                            Log.d("MYTAG_LOAD", "loadFailed + $it")
-//                        }
-//            }
-//        )
     }
 
     fun setUrl() {
@@ -202,7 +135,7 @@ class MainActivity : ComponentActivity() {
 //                }
 //        }
 
-        userId?.let { userIdString ->
+//        userId?.let { userIdString ->
 //            storage.getReference("photos/image/").child(userIdString).putBytes(
 //                CompressPicture().compressImage(this, null 1920, 1080,50)
 //            )
@@ -215,7 +148,7 @@ class MainActivity : ComponentActivity() {
 //                .addOnFailureListener {
 //                    Log.d("MYTAG_LOAD", "loadFailed + $it")
 //                }
-        }
+//        }
 
 //        storageRef.putFile(mainViewModel.uri)
 //            .addOnSuccessListener {

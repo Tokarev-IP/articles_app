@@ -8,6 +8,7 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -28,20 +29,24 @@ class SignInCallback @Inject constructor() : SignInCallbackInterface {
     override fun onAuthFailed(e: FirebaseException) {
         when (e) {
             is FirebaseAuthInvalidCredentialsException -> {
-                uiMutableStateFlow.value = SignInResponseState.Error("Incorrect mobile number")
+                uiMutableStateFlow.value = SignInResponseState.Error("Invalid Credentials Exception")
             }
 
             is FirebaseTooManyRequestsException -> {
                 uiMutableStateFlow.value =
-                    SignInResponseState.Error("Too many requests.Try again later")
+                    SignInResponseState.Error("Too many requests. Try again later")
             }
 
             is FirebaseNetworkException -> {
                 uiMutableStateFlow.value = SignInResponseState.Error("Network error")
             }
 
+            is FirebaseFirestoreException -> {
+                uiMutableStateFlow.value = SignInResponseState.Error("Server error")
+            }
+
             else -> {
-                uiMutableStateFlow.value = SignInResponseState.Error("Error")
+                uiMutableStateFlow.value = SignInResponseState.Error("The phone number format is not valid")
             }
         }
     }

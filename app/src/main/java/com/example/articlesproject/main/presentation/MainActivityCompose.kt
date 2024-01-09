@@ -1,88 +1,75 @@
 package com.example.articlesproject.main.presentation
 
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.articlesproject.main.data.data.DishData
-import com.example.articlesproject.main.presentation.screens.create.CreateDishItemCompose
-import com.example.articlesproject.main.presentation.screens.create.CreateMenuScreenCompose
-import com.example.articlesproject.main.presentation.states.UiStatesCreate
+import com.example.articlesproject.main.data.data.DishDataFirestore
+import com.example.articlesproject.main.data.data.MenuData
+import com.example.articlesproject.main.data.data.TypeDataFirestore
+import com.example.articlesproject.main.presentation.screens.CreateDishGridScreen
+import com.example.articlesproject.main.presentation.screens.CreateDishItemScreen
+import com.example.articlesproject.main.presentation.screens.CreateTypeScreen
+import com.example.articlesproject.main.presentation.screens.ShowDishGridScreen
+import com.example.articlesproject.main.presentation.states.UiStates
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainActivityCompose(
     modifier: Modifier = Modifier,
     createMenuViewModel: CreateMenuViewModel,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "CreateMenu",
-    onSend: () -> Unit,
-    onPictureOfDishChoose: () -> Unit,
+    startDestination: String = "ShowDishGridScreen",
+    onPictureWasChosen: () -> Unit,
+    onSaveDish: (dishData: DishDataFirestore) -> Unit,
+    onSaveType: (typeData: TypeDataFirestore) -> Unit,
 ) {
-    var selectedItem by remember { mutableStateOf(0) }
-    val items = listOf("Songs", "Artists", "Playlists")
+    val menuDataListState by createMenuViewModel.getMenuDataListFlow().collectAsState()
+    val state by createMenuViewModel.getUiStatesFlow().collectAsState()
+
+    val dishDataFirestore = remember { mutableStateOf<DishDataFirestore?>(null) }
+    val typeDataFirestore = remember { mutableStateOf<TypeDataFirestore?>(null) }
+    val menuData = remember { mutableStateOf<MenuData?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val createMenuViewModelState by createMenuViewModel.getMenuDataListFlow().collectAsState()
-    val uriOfPictureOfDish by createMenuViewModel.getUriOfPictureFlow().collectAsState()
-
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
-    var indexOfNewDish by remember { mutableIntStateOf(0) }
-
-//    when (state) {
-//        is UiStatesLogin.Info -> {
-//            scope.launch {
-//                with((state as UiStatesLogin.Info).info) {
-//                    Log.d("MYTAG", "snack bar")
-//                    snackbarHostState.showSnackbar(
-//                        message = this,
-//                        actionLabel = "Result of action",
-//                        duration = SnackbarDuration.Short
-//                    )
-//                }
-//            }
-//            showProgressIndicator = false
-//        }
-//        is UiStatesLogin.CodeWasSent -> {
-//            navController.navigate("EnterCode")
-//            haveGotCode = true
-//            showProgressIndicator = false
-//            Log.d("MYTAG", "navigate enterCode")
-//        }
-//        is UiStatesLogin.Loading -> {
-//            Log.d("MYTAG", "loading")
-//            showProgressIndicator = true
-//        }
-//    }
+    when (state) {
+        is UiStates.Info -> {
+            scope.launch {
+                with(state as UiStates.Info) {
+                    snackbarHostState.showSnackbar(
+                        message = this.msg,
+                        actionLabel = "Result of action",
+                        duration = SnackbarDuration.Short
+                    )
+                }
+            }
+        }
+    }
 
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data: SnackbarData ->
-
-//                val buttonColor = if (true) {
-//                    ButtonDefaults.textButtonColors(
-//                        containerColor = MaterialTheme.colorScheme.errorContainer,
-//                        contentColor = MaterialTheme.colorScheme.error
-//                    )
-//                } else {
-//                    ButtonDefaults.textButtonColors(
-//                        contentColor = MaterialTheme.colorScheme.inversePrimary
-//                    )
-//                }
-
                 Snackbar(
                     modifier = Modifier
                         .padding(24.dp),
@@ -130,93 +117,72 @@ fun MainActivityCompose(
 //                },
 //            )
 //        },
-        content = { innerPadding ->
-            if (showBottomSheet)
-                ModalBottomSheet(
-                    onDismissRequest = { showBottomSheet = false },
-                    sheetState = sheetState,
-                ) {
-                    CreateDishItemCompose(
-                        corner = 24.dp,
-                        uri = uriOfPictureOfDish,
-                        onPictureAdd = { onPictureOfDishChoose() },
-                        onAddDish = { dishData: DishData ->
-                            createMenuViewModel.setIntent(
-                                UiStatesCreate.ToAddDish(
-                                    dishData,
-                                    indexOfNewDish,
-                                )
-                            )
-                            showBottomSheet = false
-                            createMenuViewModel.setIntent(uiIntent = UiStatesCreate.ToChoosePicture(null))
-                        },
-                    )
-                }
-
-            Column(
-                modifier = modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom,
-            ) {
-//                NavigationBar(
-//                    modifier = modifier
-//                        .padding(innerPadding)
-//                ) {
-//                    items.forEachIndexed { index, item ->
-//                        NavigationBarItem(
-//                            icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
-//                            label = { Text(item) },
-//                            selected = selectedItem == index,
-//                            onClick = { selectedItem = index }
-//                        )
-//                    }
-//                }
-            }
-
-//            Column(
-//                modifier = modifier.fillMaxSize(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center,
-//            ) {
-//                if (showProgressIndicator)
-//                    CircularProgressIndicator()
-//            }
+        content = { padding ->
 
             NavHost(
                 modifier = modifier
-                    .padding(innerPadding)
+                    .padding(padding)
                     .fillMaxSize(),
                 navController = navController,
                 startDestination = startDestination
             ) {
-                composable("CreateMenu") {
-                    Log.d("MYTAG", "picture")
-                    CreateMenuScreenCompose(
-                        menuDataList = createMenuViewModelState,
-                        corner = 24.dp,
-                        onAddType = { dishType: String ->
-                            createMenuViewModel.setIntent(UiStatesCreate.ToAddDishType(dishType))
+                composable("ShowDishGridScreen") {
+                    ShowDishGridScreen(
+                        menuDataList = menuDataListState,
+                        onEditMenuGrid = {
+                            menuData.value = it
+                            navController.navigate("CreateDishGridScreen")
                         },
-                        onAdd = {
-                            showBottomSheet = true
-                            indexOfNewDish = it
+                        onAddNewType = {
+                            onSaveType(it)
                         },
+                        uiState = state,
                     )
                 }
+                composable("CreateDishGridScreen") {
+                    menuData.value?.let { data ->
+                        CreateDishGridScreen(
+                            menuData = data,
+                            onClickItem = {},
+                            onEditDish = {
+                                dishDataFirestore.value = it
+                            },
+                            onAddDish = { typeId ->
+                                onSaveDish(typeId)
+                            },
+                            onBackButton = { navController.popBackStack() },
+                            onEditType = {
 
-//                composable("EnterCode") {
-//                    VerificationCodeScreenCompose(
-//                        onSendCode = { code: String ->
-//                            onSendCode(code)
-//                        },
-//                        width = 320.dp,
-//                        timer = timer,
-//                        onBackButton = {
-//                            navController.popBackStack()
-//                        },
-//                        isActive = !showProgressIndicator,
-//                    )
-//                }
+                            }
+                        )
+                    }
+                }
+                composable("CreateDishItemScreen") {
+                    dishDataFirestore.value?.let { data ->
+                        val uri: Uri? = if (data.isPicture) data.id.toUri() else null
+
+                        CreateDishItemScreen(
+                            dishData = data,
+                            uri = uri,
+                            onBackButton = { navController.popBackStack() },
+                            onSaveDish = { onSaveDish(it) },
+                            onPictureAdd = { onPictureWasChosen() },
+                            uiState = state,
+                        )
+                    }
+                }
+                composable("CreateTypeScreen") {
+                    typeDataFirestore.value?.let { data ->
+                        CreateTypeScreen(
+                            typeData = data,
+                            onBackButton = { navController.popBackStack() },
+                            onSaveType = {
+                                onSaveType(it)
+                            },
+                            uiState = state,
+                        )
+                    }
+                }
             }
         }
     )

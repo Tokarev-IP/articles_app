@@ -1,9 +1,8 @@
 package com.example.articlesproject.main.domain.usecases
 
-import android.net.Uri
 import com.example.articlesproject.main.data.data.MenuData
 import com.example.articlesproject.main.domain.UiResults
-import com.example.articlesproject.main.domain.interfaces.StorageFirebaseInterface
+import com.example.articlesproject.main.data.data.firestore.interfaces.StorageFirebaseInterface
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,15 +14,15 @@ class StorageFirebaseUseCase @Inject constructor(private val storageFirebaseInte
         onResult:(UiResults) -> Unit,
     ) {
         for (i in menuData) {
-            for (dish in i.dishesList) {
-                dish.pictureUri?.let {uri ->
-                    storageFirebaseInterface.uploadFileFirebase(
-                        uri,
-                        onSuccessful = {},
-                        onError = { it -> onResult(UiResults.Error(it)) },
-                    )
-                }
-            }
+//            for (dish in i.dishesList) {
+//                dish.pictureUri?.let {uri ->
+//                    storageFirebaseInterface.uploadFileFirebase(
+//                        uri,
+//                        onSuccessful = {},
+//                        onError = { it -> onResult(UiResults.Error(it)) },
+//                    )
+//                }
+//            }
         }
         onResult(UiResults.Successful)
     }

@@ -1,4 +1,4 @@
-package com.example.articlesproject.login
+package com.example.articlesproject
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
