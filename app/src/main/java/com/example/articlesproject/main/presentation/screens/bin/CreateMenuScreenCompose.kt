@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.articlesproject.main.data.data.MenuData
+import com.example.articlesproject.main.data.firestore.data.MenuData
 
 @Composable
 fun CreateMenuScreenCompose(

@@ -23,7 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -36,8 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.CreateNewData
-import com.example.articlesproject.main.data.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.CreateNewData
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
+import com.example.articlesproject.main.presentation.screens.bin.TopAppBarCompose
 import com.example.articlesproject.main.presentation.screens.create.CreateDishTextFieldsCompose
 import com.example.articlesproject.main.presentation.states.UiStates
 
@@ -54,8 +56,8 @@ fun CreateDishItemScreen(
     val isPicture = rememberSaveable { mutableStateOf(dishData.isPicture) }
     val dishUri = rememberSaveable { mutableStateOf(uri) }
     val dishName = rememberSaveable { mutableStateOf(dishData.name) }
-    val dishPrice = rememberSaveable { mutableFloatStateOf(dishData.price) }
-    val dishPriority = rememberSaveable { mutableStateOf(dishData.priority) }
+    val dishPrice = rememberSaveable { mutableDoubleStateOf(dishData.price) }
+    val dishPriority = rememberSaveable { mutableIntStateOf(dishData.priority) }
 
     if (uiState == UiStates.Loading)
         Column(
@@ -93,11 +95,11 @@ fun CreateDishItemScreen(
                 CreateDishTextFieldsCompose(
                     corner = 24.dp,
                     dishName = dishName.value,
-                    dishPrice = dishPrice.floatValue,
-                    dishPriority = dishPriority.value,
+                    dishPrice = dishPrice.doubleValue,
+                    dishPriority = dishPriority.intValue,
                     onDishName = { dishName.value = it },
-                    onDishPrice = { dishPrice.floatValue = it },
-                    onDishPriority = { dishPriority.value = it },
+                    onDishPrice = { dishPrice.doubleValue = it },
+                    onDishPriority = { dishPriority.intValue = it },
                 )
                 Spacer(modifier = modifier.height(32.dp))
                 SaveDishButton(
@@ -105,8 +107,8 @@ fun CreateDishItemScreen(
                         onSaveDish(
                             DishDataFirestore(
                                 name = dishName.value,
-                                price = dishPrice.floatValue,
-                                priority = dishPriority.value,
+                                price = dishPrice.doubleValue,
+                                priority = dishPriority.intValue,
                                 isPicture = isPicture.value,
                                 id = dishData.id,
                                 typeId = dishData.typeId,

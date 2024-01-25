@@ -9,7 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,7 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
-import com.example.articlesproject.main.presentation.CreateMenuViewModel
+import com.example.articlesproject.main.data.firestore.data.CreateNewData
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.TypeDataFirestore
+import com.example.articlesproject.main.presentation.viewmodel.CreateMenuViewModel
 import com.example.articlesproject.main.presentation.MainActivityCompose
 import com.example.articlesproject.main.presentation.states.UiIntents
 import com.example.articlesproject.theme.ArticlesProjectTheme
@@ -30,7 +32,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val createMenuViewModel: CreateMenuViewModel by viewModels()
+//    private val createMenuViewModel: CreateMenuViewModel by viewModels()
 
     @Inject
     lateinit var firebaseAuthUseCase: FirebaseAuthUseCase
@@ -62,7 +64,7 @@ class MainActivity : ComponentActivity() {
             if (uri != null) {
                 Log.d("PhotoPicker", "Selected URI: $uri")
                 Log.d("PhotoPicker", "Selected URI: ${uri.path}")
-                createMenuViewModel.setIntent(uiIntent = UiIntents.ToChoosePicture(uri))
+//                createMenuViewModel.setIntent(uiIntent = UiIntents.ToChoosePicture(uri))
             } else {
                 Log.d("PhotoPicker", "No media selected")
             }
@@ -76,16 +78,37 @@ class MainActivity : ComponentActivity() {
 
         val createMenuViewModel = hiltViewModel<CreateMenuViewModel>()
 
+        createMenuViewModel.setIntent(UiIntents.GetDataIdFromFirestore)
+
         MainActivityCompose(
             createMenuViewModel = createMenuViewModel,
-            onPictureWasChosen = {
-                pickUpPicture()
+            onPictureWasChosen = { pickUpPicture() },
+            onSaveDish = {data: DishDataFirestore ->
+                createMenuViewModel.setIntent(uiIntent = UiIntents.ToAddDish(data))
             },
-            onSaveDish = {
-                createMenuViewModel.setIntent(uiIntent = UiIntents.ToAddDish(it))
+            onSaveType = {data: TypeDataFirestore ->
+                createMenuViewModel.setIntent(uiIntent = UiIntents.ToAddType(data))
             },
-            onSaveType = {
-                createMenuViewModel.setIntent(uiIntent = UiIntents.ToAddType(it))
+            onCreateMenu = { createMenuViewModel.setIntent(UiIntents.ToCreateMenu) },
+            onLoadIdAgain = { createMenuViewModel.setIntent(UiIntents.GetDataIdFromFirestore) },
+            onAddNewMenu = { createMenuViewModel.setIntent(UiIntents.ToAddMenu(CreateNewData.getNewMenu())) },
+            onAddNewDish = { typeId: String ->
+                createMenuViewModel.setIntent(
+                    uiIntent = UiIntents.ToAddDish(
+                        CreateNewData.getNewDish(
+                            typeId
+                        )
+                    )
+                )
+            },
+            onAddNewType = { menuId: String ->
+                createMenuViewModel.setIntent(
+                    uiIntent = UiIntents.ToAddType(
+                        CreateNewData.getNewType(
+                            menuId
+                        )
+                    )
+                )
             },
         )
     }

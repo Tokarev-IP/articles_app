@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.articlesproject.main.data.data.CreateNewData
-import com.example.articlesproject.main.data.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.CreateNewData
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
 import com.example.articlesproject.main.presentation.screens.show.DishItemCompose
 
 @Composable

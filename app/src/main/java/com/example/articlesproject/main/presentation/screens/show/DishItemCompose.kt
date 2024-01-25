@@ -2,6 +2,7 @@ package com.example.articlesproject.main.presentation.screens.show
 
 import android.net.Uri
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,9 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -22,11 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.CreateNewData
-import com.example.articlesproject.main.data.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
 
 @Composable
 fun DishItemCompose(
@@ -48,14 +51,27 @@ fun DishItemCompose(
                 modifier = modifier
                     .fillMaxWidth()
             ) {
-                DishPicture(
-                    modifier = modifier,
-                    uri = null,
-                    topStartCorner = topStartCorner,
-                    corner = corner,
-                    height = 120.dp,
-                    width = 120.dp,
-                )
+                if (dishData.isPicture)
+                    DishPicture(
+                        modifier = modifier,
+                        uri = null,
+                        topStartCorner = topStartCorner,
+                        corner = corner,
+                        height = 120.dp,
+                        width = 120.dp,
+                    )
+                else
+                    Box(
+                        modifier = modifier
+                            .height(120.dp)
+                            .width(120.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = "NoPictureIcon",
+                            modifier = modifier.align(Alignment.Center)
+                        )
+                    }
                 DishText(
                     modifier = modifier
                         .fillMaxWidth()
@@ -129,11 +145,11 @@ private fun DishItemPreview() {
     DishItemCompose(
         dishData = DishDataFirestore(
             name = "Name",
-            price = 10f,
+            price = 10.0,
             priority = 1,
             isPicture = false,
-            id = "CreateNewData.getUUID()",
-            typeId = "typeId",
+            id = "222",
+            typeId = "111",
         ),
         onClick = {}
     )

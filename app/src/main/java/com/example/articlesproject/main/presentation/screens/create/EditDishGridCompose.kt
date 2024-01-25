@@ -22,10 +22,10 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.CreateNewData
-import com.example.articlesproject.main.data.data.DishDataFirestore
-import com.example.articlesproject.main.data.data.MenuData
-import com.example.articlesproject.main.data.data.TypeDataFirestore
+import com.example.articlesproject.main.data.firestore.data.CreateNewData
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.MenuData
+import com.example.articlesproject.main.data.firestore.data.TypeDataFirestore
 
 @Composable
 fun EditDishGridCompose(
@@ -139,6 +139,7 @@ private fun EditDishGridPreview() {
                 name = "Salad",
                 id = "ID",
                 priority = 2,
+                menuId = "id"
             ),
             dishesList = mutableListOf(
                 CreateNewData.getNewDish("type Id1"),

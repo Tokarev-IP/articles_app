@@ -1,4 +1,4 @@
-package com.example.articlesproject.main.data
+package com.example.articlesproject.main.data.storage
 
 import android.content.Context
 import android.graphics.Bitmap

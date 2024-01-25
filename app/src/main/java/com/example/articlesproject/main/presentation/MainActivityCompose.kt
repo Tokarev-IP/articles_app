@@ -1,6 +1,7 @@
 package com.example.articlesproject.main.presentation
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -23,14 +24,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.articlesproject.main.data.data.DishDataFirestore
-import com.example.articlesproject.main.data.data.MenuData
-import com.example.articlesproject.main.data.data.TypeDataFirestore
-import com.example.articlesproject.main.presentation.screens.CreateDishGridScreen
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.MenuData
+import com.example.articlesproject.main.data.firestore.data.MenuDataFirestore
+import com.example.articlesproject.main.data.firestore.data.TypeDataFirestore
+import com.example.articlesproject.main.presentation.screens.CreateDataIdScreen
+import com.example.articlesproject.main.presentation.screens.bin.CreateDishGridScreen
 import com.example.articlesproject.main.presentation.screens.CreateDishItemScreen
+import com.example.articlesproject.main.presentation.screens.CreateMenuScreen
 import com.example.articlesproject.main.presentation.screens.CreateTypeScreen
-import com.example.articlesproject.main.presentation.screens.ShowDishGridScreen
-import com.example.articlesproject.main.presentation.states.UiStates
+import com.example.articlesproject.main.presentation.screens.DishGridScreen
+import com.example.articlesproject.main.presentation.states.ScreenStates
+import com.example.articlesproject.main.presentation.states.UiIntents
+import com.example.articlesproject.main.presentation.viewmodel.CreateMenuViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,32 +44,73 @@ fun MainActivityCompose(
     modifier: Modifier = Modifier,
     createMenuViewModel: CreateMenuViewModel,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "ShowDishGridScreen",
+    startDestination: String = "CreateDataIdScreen",
     onPictureWasChosen: () -> Unit,
+    onAddNewDish: (typeId: String) -> Unit,
+    onAddNewType: (menuId: String) -> Unit,
     onSaveDish: (dishData: DishDataFirestore) -> Unit,
     onSaveType: (typeData: TypeDataFirestore) -> Unit,
+    onCreateMenu: () -> Unit,
+    onLoadIdAgain: () -> Unit,
+    onAddNewMenu: () -> Unit,
 ) {
-    val menuDataListState by createMenuViewModel.getMenuDataListFlow().collectAsState()
+    val dataListState by createMenuViewModel.getDataListFlow().collectAsState()
     val state by createMenuViewModel.getUiStatesFlow().collectAsState()
+    val snackBarMsg by createMenuViewModel.getSnackBarMsgFlow().collectAsState()
+    val menuListState by createMenuViewModel.getMenuListFlow().collectAsState()
+    val screenStates by createMenuViewModel.getScreenStateFlow().collectAsState()
 
+    val pictureUri = remember { mutableStateOf<Uri?>(null) }
     val dishDataFirestore = remember { mutableStateOf<DishDataFirestore?>(null) }
     val typeDataFirestore = remember { mutableStateOf<TypeDataFirestore?>(null) }
-    val menuData = remember { mutableStateOf<MenuData?>(null) }
+    val menuDataFirestore = remember { mutableStateOf<MenuDataFirestore?>(null) }
+    val dataMenu = remember { mutableStateOf<MenuData?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    when (state) {
-        is UiStates.Info -> {
-            scope.launch {
-                with(state as UiStates.Info) {
-                    snackbarHostState.showSnackbar(
-                        message = this.msg,
-                        actionLabel = "Result of action",
-                        duration = SnackbarDuration.Short
-                    )
-                }
-            }
+    when (screenStates) {
+        is ScreenStates.CreateMenuScreen -> {
+            navController.navigate("CreateMenuScreen")
+            createMenuViewModel.setIntent(UiIntents.GetDataMenuFromFirestore)
+            Log.d("DAVAI", "CreateMenuScreen")
+        }
+
+        is ScreenStates.CreateDishGridScreen -> {
+            navController.navigate("CreateDishGridScreen")
+            Log.d("DAVAI", "CreateDishGridScreen")
+        }
+
+        is ScreenStates.CreateDataIdScreen -> {
+            navController.navigate("CreateDataIdScreen")
+            Log.d("DAVAI", "CreateDataIdScreen")
+        }
+
+        is ScreenStates.CreateTypeScreen -> {
+            navController.navigate("CreateTypeScreen")
+            Log.d("DAVAI", "CreateTypeScreen")
+        }
+
+        is ScreenStates.CreateDishItemScreen -> {
+            navController.navigate("CreateDishItemScreen")
+            Log.d("DAVAI", "CreateDishItemScreen")
+        }
+
+        is ScreenStates.ShowDishGridScreen -> {
+            navController.navigate("DishGridScreen")
+            createMenuViewModel.setIntent(UiIntents.GetTypeDataListFromFirestore)
+            createMenuViewModel.setIntent(UiIntents.GetDishDataListFromFirestore)
+            Log.d("DAVAI", "DishGridScreen")
+        }
+    }
+
+    scope.launch {
+        snackBarMsg?.let { msg ->
+            snackbarHostState.showSnackbar(
+                message = msg,
+                actionLabel = "Result of action",
+                duration = SnackbarDuration.Short
+            )
         }
     }
 
@@ -71,52 +118,12 @@ fun MainActivityCompose(
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data: SnackbarData ->
                 Snackbar(
-                    modifier = Modifier
-                        .padding(24.dp),
-//                    action = {
-//                        TextButton(
-//                            onClick = { data.dismiss() },
-//                        ) { Text(data.visuals.actionLabel ?: "") }
-//                    }
+                    modifier = Modifier.padding(24.dp)
                 ) {
                     Text(data.visuals.message)
                 }
             }
         },
-//        floatingActionButton = {
-//            val clickCount = remember { mutableStateOf(0) }
-//            ExtendedFloatingActionButton(
-//                onClick = {
-//                    // show snackbar as a suspend function
-//                    scope.launch {
-//                        snackbarHostState.showSnackbar(
-//                            message = "Snackbar # ${++clickCount.value}",
-//                            actionLabel = "Action",
-//                            withDismissAction = true,
-//                            duration = SnackbarDuration.Indefinite
-//                        )
-//                    }
-//                }
-//            ) { Text("Show snackbar") }
-//        },
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Text("Welcome", maxLines = 1)
-//
-//                },
-//                navigationIcon = {
-//                    IconButton(onClick = {
-//
-//                    }) {
-//                        Icon(
-//                            imageVector = Icons.Filled.KeyboardArrowLeft,
-//                            contentDescription = "Go back"
-//                        )
-//                    }
-//                },
-//            )
-//        },
         content = { padding ->
 
             NavHost(
@@ -126,29 +133,48 @@ fun MainActivityCompose(
                 navController = navController,
                 startDestination = startDestination
             ) {
-                composable("ShowDishGridScreen") {
-                    ShowDishGridScreen(
-                        menuDataList = menuDataListState,
-                        onEditMenuGrid = {
-                            menuData.value = it
-                            navController.navigate("CreateDishGridScreen")
-                        },
-                        onAddNewType = {
-                            onSaveType(it)
-                        },
-                        uiState = state,
-                    )
+                composable("DishGridScreen") {
+                    menuDataFirestore.value?.let { data: MenuDataFirestore ->
+                        DishGridScreen(
+                            menuDataList = dataListState,
+                            menuId = data.id,
+                            onEditMenuGrid = { menuData: MenuData ->
+                                dataMenu.value = menuData
+                                createMenuViewModel.setScreenState(ScreenStates.CreateDishGridScreen)
+                            },
+                            onAddNewType = { menuId: String ->
+                                onAddNewType(menuId)
+                            },
+                            uiState = state,
+                            onBackButton = {
+                                navController.popBackStack()
+                            },
+                            onEditDish = {
+                                dishDataFirestore.value = it
+                                createMenuViewModel.setScreenState(ScreenStates.CreateDishItemScreen)
+                            },
+                            onAddDish = { typeId: String ->
+                                onAddNewDish(typeId)
+                            },
+                            onClickItem = {},
+                            onEditType = {
+                                typeDataFirestore.value = it
+                                createMenuViewModel.setScreenState(ScreenStates.CreateTypeScreen)
+                            },
+                        )
+                    }
                 }
                 composable("CreateDishGridScreen") {
-                    menuData.value?.let { data ->
+                    dataMenu.value?.let { data: MenuData ->
                         CreateDishGridScreen(
                             menuData = data,
                             onClickItem = {},
                             onEditDish = {
                                 dishDataFirestore.value = it
+                                createMenuViewModel.setScreenState(ScreenStates.CreateDishItemScreen)
                             },
-                            onAddDish = { typeId ->
-                                onSaveDish(typeId)
+                            onAddDish = { typeId: String ->
+                                onAddNewDish(typeId)
                             },
                             onBackButton = { navController.popBackStack() },
                             onEditType = {
@@ -165,7 +191,9 @@ fun MainActivityCompose(
                             dishData = data,
                             uri = uri,
                             onBackButton = { navController.popBackStack() },
-                            onSaveDish = { onSaveDish(it) },
+                            onSaveDish = { dishData ->
+                                onSaveDish(dishData)
+                            },
                             onPictureAdd = { onPictureWasChosen() },
                             uiState = state,
                         )
@@ -182,6 +210,24 @@ fun MainActivityCompose(
                             uiState = state,
                         )
                     }
+                }
+                composable("CreateDataIdScreen") {
+                    CreateDataIdScreen(
+                        onCreateMenu = { onCreateMenu() },
+                        onLoadAgain = { onLoadIdAgain() },
+                        uiState = state,
+                    )
+                }
+                composable("CreateMenuScreen") {
+                    CreateMenuScreen(
+                        uiState = state,
+                        onAddNewMenu = { onAddNewMenu() },
+                        onClick = { data: MenuDataFirestore ->
+                            menuDataFirestore.value = data
+                            createMenuViewModel.setScreenState(ScreenStates.ShowDishGridScreen)
+                        },
+                        menuList = menuListState
+                    )
                 }
             }
         }

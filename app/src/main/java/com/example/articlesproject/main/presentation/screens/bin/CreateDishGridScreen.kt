@@ -1,4 +1,4 @@
-package com.example.articlesproject.main.presentation.screens
+package com.example.articlesproject.main.presentation.screens.bin
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absolutePadding
@@ -22,12 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.CreateNewData
-import com.example.articlesproject.main.data.data.DishDataFirestore
-import com.example.articlesproject.main.data.data.MenuData
-import com.example.articlesproject.main.data.data.TypeDataFirestore
+import com.example.articlesproject.main.data.firestore.data.DishDataFirestore
+import com.example.articlesproject.main.data.firestore.data.MenuData
+import com.example.articlesproject.main.data.firestore.data.TypeDataFirestore
 import com.example.articlesproject.main.presentation.screens.create.EditDishGridCompose
 import com.example.articlesproject.main.presentation.screens.create.EditIconButton
 
@@ -38,7 +36,7 @@ fun CreateDishGridScreen(
     menuData: MenuData,
     onBackButton: () -> Unit,
     onEditDish: (dishData: DishDataFirestore) -> Unit,
-    onAddDish: (dishData: DishDataFirestore) -> Unit,
+    onAddDish: (typeId: String) -> Unit,
     onClickItem: () -> Unit,
     onEditType: (typeData: TypeDataFirestore) -> Unit,
 ) {
@@ -78,10 +76,10 @@ fun CreateDishGridScreen(
                 }
                 EditDishGridCompose(
                     menuData = menuData,
-                    onEditDish = {
-                        onEditDish(it)
+                    onEditDish = {data: DishDataFirestore ->
+                        onEditDish(data)
                     },
-                    onAddDish = { onAddDish(CreateNewData.getNewDish(menuData.typeData.id)) },
+                    onAddDish = { onAddDish(menuData.typeData.id) },
                     onClickItem = { onClickItem() }
                 )
             }
@@ -121,6 +119,7 @@ private fun CreateDishListScreenPreview() {
                 name = "Salad",
                 id = "ID",
                 priority = 3,
+                menuId = "id"
             ),
             dishesList = mutableListOf()
         ),

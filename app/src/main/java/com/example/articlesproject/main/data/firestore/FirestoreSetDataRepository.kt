@@ -1,43 +1,64 @@
-package com.example.articlesproject.main.data.data.firestore
+package com.example.articlesproject.main.data.firestore
 
 import android.util.Log
-import com.example.articlesproject.main.data.data.firestore.interfaces.FirestoreSetDataInterface
+import com.example.articlesproject.main.data.firestore.interfaces.FirestoreSetDataInterface
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FirestoreSetData @Inject constructor() : FirestoreSetDataInterface {
+class FirestoreSetDataRepository @Inject constructor() : FirestoreSetDataInterface {
 
     private val firestoreDatabase = Firebase.firestore
 
-    override fun <T : Any> setData(
+    override fun <T : Any> setAnyDataOneCollection(
         data: T,
-        path: String,
+        collection: String,
         documentId: String,
-        authId: String,
         onComplete: (msg: String) -> Unit,
-        onFailure: (e: Exception) -> Unit,
-    ){
-        firestoreDatabase.collection("$authId/$path").document(documentId)
+        onFailure: (e: Exception) -> Unit
+    ) {
+        Log.d("DAVAI", "Set Any Data repository data - $data")
+        firestoreDatabase.collection(collection).document(documentId)
             .set(data)
             .addOnCompleteListener {
                 Log.d("DAVAI", "Complete Listener ${it.result} and ${it.isComplete}")
-                onComplete("TYPE was uploaded successfully")
+                onComplete("Data was uploaded successfully")
             }
             .addOnFailureListener { e ->
-                Log.w("DAVAI", "Error adding document", e)
+                Log.w("DAVAI", "Error", e)
                 onFailure(e)
             }
     }
 
-
-    fun uploadTypesOfMenuData(
-        collectionPath: String,
+    override fun <T : Any> setAnyDataTwoCollection(
+        data: T,
+        collection1: String,
+        collection2: String,
+        dataId: String,
         documentId: String,
-//        menuData: MenuData,
+        onComplete: (msg: String) -> Unit,
+        onFailure: (e: Exception) -> Unit
     ) {
+        firestoreDatabase.collection(collection1).document(dataId).collection(collection2).document(documentId)
+            .set(data)
+            .addOnCompleteListener {
+                Log.d("DAVAI", "Complete Listener ${it.result} and ${it.isComplete}")
+                onComplete("Data was uploaded successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.w("DAVAI", "Error", e)
+                onFailure(e)
+            }
+    }
+}
+
+//    fun uploadTypesOfMenuData(
+//        collectionPath: String,
+//        documentId: String,
+//        menuData: MenuData,
+//    ) {
 //        val menuData = MenuData(
 //            "Salad", mutableListOf(
 //                DishData(null, "Olevie", 1, "Very tasty salad"),
@@ -78,7 +99,7 @@ class FirestoreSetData @Inject constructor() : FirestoreSetDataInterface {
 //            .addOnSuccessListener { document ->
 //                    Log.d("DAVAI", "${document.id} => ${document.data}")
 //            }
-    }
+//    }
 
 //    override fun uploadData(
 //        collectionPath: String? = firebaseAuthUseCase.getAuthId(),
@@ -97,4 +118,4 @@ class FirestoreSetData @Inject constructor() : FirestoreSetDataInterface {
 //            }
 //    }
 
-}
+//}

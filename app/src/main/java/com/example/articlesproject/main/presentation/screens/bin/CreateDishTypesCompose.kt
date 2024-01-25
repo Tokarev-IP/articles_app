@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.MenuData
+import com.example.articlesproject.main.data.firestore.data.MenuData
 
 @Composable
 fun CreateDishTypesCompose(

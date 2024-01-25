@@ -29,11 +29,11 @@ fun CreateDishTextFieldsCompose(
     modifier: Modifier = Modifier,
     corner: Dp,
     dishName: String,
-    dishPrice: Float,
-    dishPriority: Byte,
+    dishPrice: Double,
+    dishPriority: Int,
     onDishName: (name: String) -> Unit,
-    onDishPrice: (price: Float) -> Unit,
-    onDishPriority: (priority: Byte) -> Unit,
+    onDishPrice: (price: Double) -> Unit,
+    onDishPriority: (priority: Int) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -55,7 +55,7 @@ fun CreateDishTextFieldsCompose(
         TextField(
             valueText = dishPrice.toString(),
             onText = {
-                onDishPrice(it.toFloat())
+                onDishPrice(it.toDouble())
             },
             corner = corner,
             keyboardType = KeyboardType.Number,
@@ -67,7 +67,7 @@ fun CreateDishTextFieldsCompose(
         TextField(
             valueText = dishPriority.toString(),
             onText = {
-                onDishPriority(it.toByte())
+                onDishPriority(it.toInt())
             },
             corner = corner,
             keyboardType = KeyboardType.Number,
@@ -132,7 +132,7 @@ private fun LogInPreview() {
     CreateDishTextFieldsCompose(
         corner = 24.dp,
         dishName = "Name",
-        dishPrice = 150.3F,
+        dishPrice = 150.32,
         dishPriority = 1,
         onDishName = {},
         onDishPrice = {},

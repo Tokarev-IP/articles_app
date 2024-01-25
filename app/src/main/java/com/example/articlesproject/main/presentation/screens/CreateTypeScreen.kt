@@ -21,8 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
-import com.example.articlesproject.main.data.data.CreateNewData
-import com.example.articlesproject.main.data.data.TypeDataFirestore
+import com.example.articlesproject.main.data.firestore.data.CreateNewData
+import com.example.articlesproject.main.data.firestore.data.TypeDataFirestore
+import com.example.articlesproject.main.presentation.screens.bin.TopAppBarCompose
 import com.example.articlesproject.main.presentation.screens.create.TextField
 import com.example.articlesproject.main.presentation.states.UiStates
 
@@ -75,7 +76,7 @@ fun CreateTypeScreen(
                 Spacer(modifier = modifier.height(16.dp))
                 TextField(
                     valueText = priority.value.toString(),
-                    onText = { priority.value = it.toByte() },
+                    onText = { priority.value = it.toInt() },
                     corner = corner,
                     keyboardType = KeyboardType.Number,
                     labelText = "Priority",
@@ -89,6 +90,7 @@ fun CreateTypeScreen(
                             name = type.value,
                             id = typeData.id,
                             priority = priority.value,
+                            menuId = "menu id"
                         )
                     )
                 }
@@ -107,7 +109,7 @@ private fun SaveNewTypeButton(onSave: () -> Unit) {
 @Composable
 private fun CreateDishListScreenPreview() {
     CreateTypeScreen(
-        typeData = CreateNewData.getNewType(),
+        typeData = CreateNewData.getNewType("dfgdf"),
         onBackButton = {},
         onSaveType = {},
         uiState = UiStates.Showing

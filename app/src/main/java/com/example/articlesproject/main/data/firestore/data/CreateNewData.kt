@@ -1,4 +1,4 @@
-package com.example.articlesproject.main.data.data
+package com.example.articlesproject.main.data.firestore.data
 
 import java.util.UUID
 
@@ -7,8 +7,8 @@ object CreateNewData {
         typeId: String,
         initialIsPicture: Boolean = false,
         initialName: String = "Name",
-        initialPrice: Float = 0f,
-        initialPriority: Byte = 1,
+        initialPrice: Double = 1.1,
+        initialPriority: Int = 1,
     ) = DishDataFirestore(
         name = initialName,
         price = initialPrice,
@@ -19,13 +19,23 @@ object CreateNewData {
     )
 
     fun getNewType(
+        menuId: String,
         initialName: String = "Type",
-        initialPriority: Byte = 1,
+        initialPriority: Int = 1,
     ) = TypeDataFirestore(
         name = initialName,
         id = getUUID(),
         priority = initialPriority,
+        menuId = menuId,
     )
 
+    fun getNewMenu(
+        initialName: String = "Name",
+        initialPriority: Int = 1,
+    ) = MenuDataFirestore(
+        name = initialName,
+        id = getUUID(),
+        priority = initialPriority,
+    )
     private fun getUUID(): String = UUID.randomUUID().toString()
 }
