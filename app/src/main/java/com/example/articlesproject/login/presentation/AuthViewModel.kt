@@ -1,26 +1,18 @@
 package com.example.articlesproject.login.presentation
 
-import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.articlesproject.login.data.interfaces.SignInCallbackInterface
 import com.example.articlesproject.login.domain.MyTime
 import com.example.articlesproject.login.domain.usecases.FirebaseAuthUseCase
-import com.example.articlesproject.login.domain.usecases.states.FirebaseAuthResponseState
 import com.example.articlesproject.login.domain.usecases.GetCodeUseCase
 import com.example.articlesproject.login.domain.usecases.SignInCallback
 import com.example.articlesproject.login.domain.usecases.SignInUseCase
+import com.example.articlesproject.login.domain.usecases.states.FirebaseAuthResponseState
 import com.example.articlesproject.login.domain.usecases.states.SignInResponseState
 import com.example.articlesproject.login.presentation.states.UiIntentsLogin
 import com.example.articlesproject.login.presentation.states.UiStatesLogin
-import com.google.firebase.FirebaseException
-import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -50,9 +42,6 @@ class AuthViewModel @Inject constructor(
     private var timeJob: Job? = null
 
     init {
-        Log.d("MYTAG", "viewModel init")
-        Log.d("MYTAG", this.toString())
-
         viewModelScope.launch {
             signInCallback.getUiStateFlow().collect {
                 when (it) {
@@ -151,34 +140,4 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-//    override fun onAuthComplete(credential: PhoneAuthCredential) {
-//        signIn(credential)
-//    }
-//
-//    override fun onAuthFailed(e: FirebaseException) {
-//        when (e) {
-//            is FirebaseAuthInvalidCredentialsException -> {
-//                uiState.value = UiStatesLogin.Info("Incorrect mobile number")
-//            }
-//
-//            is FirebaseTooManyRequestsException -> {
-//                uiState.value = UiStatesLogin.Info("Too many requests.Try again later")
-//            }
-//
-//            is FirebaseNetworkException -> {
-//                uiState.value = UiStatesLogin.Info("Network error")
-//            }
-//
-//            else -> {
-//                uiState.value = UiStatesLogin.Info("Error")
-//            }
-//        }
-//    }
-//
-//    override fun onAuthCodeWasSent(
-//        verificationId: String,
-//        token: PhoneAuthProvider.ForceResendingToken
-//    ) {
-//        uiState.value = UiStatesLogin.CodeWasSent(verificationId, token)
-//    }
 }

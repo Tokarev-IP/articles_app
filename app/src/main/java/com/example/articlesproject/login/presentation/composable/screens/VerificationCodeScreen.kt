@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
+import com.example.articlesproject.login.presentation.states.UiStatesLogin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,8 +25,8 @@ fun VerificationCodeScreenCompose(
     onSendCode: (String) -> Unit,
     width: Dp,
     timer: String,
-    onBackButton:() -> Unit,
-    isActive: Boolean,
+    onBackButton: () -> Unit,
+    state: UiStatesLogin
 ) {
     val code = rememberSaveable { mutableStateOf("") }
 
@@ -33,7 +34,7 @@ fun VerificationCodeScreenCompose(
         topBar = {
             TopAppBar(
                 title = {
-//                        Text(text = stringResource(id = R.string.code))
+                    Text(text = stringResource(id = R.string.code))
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -47,41 +48,47 @@ fun VerificationCodeScreenCompose(
                 },
             )
         },
-    ) {innerPadding ->
+    ) { innerPadding ->
 
-        Spacer(modifier = modifier.height(innerPadding.calculateTopPadding()))
-        
         Column(
             modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            CodeTextField(
-                onCode = {
-                    code.value = it
-                },
-                codeText = code.value,
-                width = width,
-                isActive = isActive,
-            )
+            when (state) {
+                is UiStatesLogin.Loading -> {
+                    CircularProgressIndicator()
+                }
 
-            Spacer(modifier = modifier.height(40.dp))
+                else -> {
+                    CodeTextField(
+                        onCode = {
+                            code.value = it
+                        },
+                        codeText = code.value,
+                        width = width,
+                    )
 
-            SendCodeButton(
-                onClick = { onSendCode(code.value) },
-                width = width,
-                isActive = code.value.length == 6 && isActive
-            )
+                    Spacer(modifier = modifier.height(40.dp))
 
-            Spacer(modifier = modifier.height(20.dp))
+                    SendCodeButton(
+                        onClick = { onSendCode(code.value) },
+                        width = width,
+                        isActive = code.value.length == 6
+                    )
 
-            GetCodeAgainButton(
-                onClick = { /*TODO*/ },
-                width = width,
-                isActive = timer == "" && isActive,
-                timer = timer
-            )
+                    Spacer(modifier = modifier.height(20.dp))
+
+                    GetCodeAgainButton(
+                        onClick = { /*TODO*/ },
+                        width = width,
+                        isActive = timer == "",
+                        timer = timer
+                    )
+                }
+            }
         }
     }
 }
@@ -92,7 +99,6 @@ fun CodeTextField(
     onCode: (String) -> Unit,
     codeText: String,
     width: Dp,
-    isActive: Boolean,
 ) {
     OutlinedTextField(
         value = codeText,
@@ -103,7 +109,6 @@ fun CodeTextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         label = { Text(text = stringResource(id = R.string.code)) },
         maxLines = 1,
-//        enabled = isActive,
         onValueChange = {
             if (it.length <= 6)
                 onCode(it.trim())

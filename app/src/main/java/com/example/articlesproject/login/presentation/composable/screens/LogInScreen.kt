@@ -2,7 +2,6 @@ package com.example.articlesproject.login.presentation.composable.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -12,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,16 +28,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.articlesproject.R
+import com.example.articlesproject.login.presentation.states.UiStatesLogin
 
 @Composable
 fun LogInScreenCompose(
     modifier: Modifier = Modifier,
     width: Dp,
     onReceiveCode: (number: String) -> Unit,
-    isActive: Boolean,
     onGoToCodeScreen: () -> Unit,
     haveGotCode: Boolean,
     timer: String,
+    state: UiStatesLogin,
 ) {
     val mobileNumber = rememberSaveable { mutableStateOf("") }
 
@@ -46,36 +47,38 @@ fun LogInScreenCompose(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            MobileTextField(
-                mobileNumberText = mobileNumber.value,
-                onMobileNumber = {
-                    mobileNumber.value = it
-                },
-                width = width,
-                isActive = isActive,
-            )
+        when (state) {
+            is UiStatesLogin.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            else -> {
+                MobileTextField(
+                    mobileNumberText = mobileNumber.value,
+                    onMobileNumber = {
+                        mobileNumber.value = it
+                    },
+                    width = width,
+                )
+
+                Spacer(modifier = modifier.height(40.dp))
+
+                GetCodeButton(
+                    onClick = { onReceiveCode(mobileNumber.value) },
+                    width = width,
+                    isActive = mobileNumber.value.isNotEmpty(),
+                    timer = timer,
+                )
+
+                Spacer(modifier = modifier.height(20.dp))
+
+                AlreadyHaveCodeButton(
+                    onClick = { onGoToCodeScreen() },
+                    width = width,
+                    haveGotCode = haveGotCode,
+                )
+            }
         }
-
-        Spacer(modifier = modifier.height(40.dp))
-
-        GetCodeButton(
-            onClick = { onReceiveCode(mobileNumber.value) },
-            width = width,
-            isActive = mobileNumber.value.isNotEmpty() && isActive,
-            timer = timer,
-        )
-
-        Spacer(modifier = modifier.height(20.dp))
-
-        AlreadyHaveCodeButton(
-            onClick = { onGoToCodeScreen() },
-            width = width,
-            isActive = isActive,
-            haveGotCode = haveGotCode,
-        )
     }
 }
 
@@ -85,7 +88,6 @@ fun MobileTextField(
     mobileNumberText: String,
     onMobileNumber: (String) -> Unit,
     width: Dp,
-    isActive: Boolean,
 ) {
     OutlinedTextField(
         value = mobileNumberText,
@@ -93,7 +95,6 @@ fun MobileTextField(
         shape = RoundedCornerShape(20.dp),
         modifier = modifier
             .width(width),
-        enabled = isActive,
         trailingIcon = {
             if (mobileNumberText.isNotEmpty())
                 IconButton(onClick = { onMobileNumber("") }) {
@@ -112,8 +113,8 @@ fun GetCodeButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     width: Dp,
-    isActive: Boolean,
     timer: String,
+    isActive: Boolean,
 ) {
     Button(
         onClick = { onClick() },
@@ -130,14 +131,13 @@ fun AlreadyHaveCodeButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     width: Dp,
-    isActive: Boolean,
     haveGotCode: Boolean,
 ) {
     FilledTonalButton(
         onClick = { onClick() },
         modifier = modifier
             .width(width),
-        enabled = isActive && haveGotCode,
+        enabled = haveGotCode,
     ) {
         Text(text = stringResource(id = R.string.already_have_code))
     }
@@ -149,9 +149,9 @@ fun LogInPreview() {
     LogInScreenCompose(
         width = 320.dp,
         onReceiveCode = {},
-        isActive = false,
         onGoToCodeScreen = {},
         haveGotCode = false,
         timer = "",
+        state = UiStatesLogin.Nothing,
     )
 }

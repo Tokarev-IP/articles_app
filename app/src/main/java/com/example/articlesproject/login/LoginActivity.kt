@@ -2,12 +2,11 @@ package com.example.articlesproject.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,7 +40,6 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ArticlesProjectTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -59,7 +57,6 @@ class LoginActivity : ComponentActivity() {
     @Composable
     fun StartUI() {
         val authViewModel = hiltViewModel<AuthViewModel>()
-
         val state by authViewModel.getUiStateFlow().collectAsState()
 
         when (state){
@@ -67,8 +64,6 @@ class LoginActivity : ComponentActivity() {
                 startActivity(Intent(this, MainActivity::class.java))
             }
         }
-
-        Log.d("MYTAG", "StartUI")
 
         LoginActivityCompose(
             onSendCode = { code: String ->
@@ -81,16 +76,12 @@ class LoginActivity : ComponentActivity() {
         )
     }
 
-    fun closeSoft() {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-    }
-
     private fun createOptions(phoneNumber: String): PhoneAuthOptions {
         return PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)                  // Phone number to verify
-            .setTimeout(MyTime.TIME_OUT_TIME, TimeUnit.SECONDS)    // Timeout and unit
-            .setActivity(this)                        // Activity (for callback binding)
-            .setCallbacks(signInRepository)                       // OnVerificationStateChangedCallbacks
+            .setPhoneNumber(phoneNumber)                            // Phone number to verify
+            .setTimeout(MyTime.TIME_OUT_TIME, TimeUnit.SECONDS)     // Timeout and unit
+            .setActivity(this)                                      // Activity (for callback binding)
+            .setCallbacks(signInRepository)                         // OnVerificationStateChangedCallbacks
             .build()
     }
 
